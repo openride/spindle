@@ -4,14 +4,14 @@ import React from 'react';
 import { Update, component } from './spindle';
 
 
-const Msg = Union({
-  Increment: null,
-  Decrement: null,
+const Model = Immutable.Record({
+  value: null,
 });
 
 
-const Model = Immutable.Record({
-  value: null,
+const Msg = Union({
+  Increment: null,
+  Decrement: null,
 });
 
 

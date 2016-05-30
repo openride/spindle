@@ -16,6 +16,11 @@ const bindMsg = (Msg, dispatch) =>
     .reduce((a, b) => Object.assign(a, b), {});
 
 
+const spindle = () => ({
+  cmd: cmd => console.log('hi', cmd),
+});
+
+
 export function component(name, {
   init,
   Msg,
@@ -27,26 +32,43 @@ export function component(name, {
     constructor(props) {
       super(props);
       this.state = { model: init(props) };
-      this.boundMsg = bindMsg(Msg, this.update);
+      this._boundMsg = bindMsg(Msg, this.update.bind(this));
+    }
+
+    getChildContext() {
+      if (!this.context.spindle && !this._spindle) {
+        this._spindle = spindle();
+      }
+      return { spindle: this.context.spindle || this._spindle };
     }
 
     shouldComponentUpdate(_, nextState) {
       return !Immutable.is(nextState.model, this.state.model);
     }
 
-    update = msg => {
+    getSpindle() {
+      return this.context.spindle || this._spindle;
+    }
+
+    update(msg) {
       const { model, cmd, emit } = update(msg, this.state.model).toObject();
       model && this.setState({ model });
-      // TODO: cmd
+      cmd && this.getSpindle().cmd(cmd);
       emit && this.props.onEmit && this.props.onEmit(emit);
     }
 
     render() {
-      return view(this.state.model, this.boundMsg);
+      return view(this.state.model, this._boundMsg);
     }
   }
   Object.assign(Component, {
     displayName: name,
+    contextTypes: {
+      spindle: React.PropTypes.object,
+    },
+    childContextTypes: {
+      spindle: React.PropTypes.object,
+    },
   });
   return Component;
 };
