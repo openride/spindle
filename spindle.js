@@ -17,20 +17,28 @@ const bindMsg = (Msg, dispatch) =>
 class ComponentBase extends React.Component {}
 
 
+const UNINITIALIZED = {};  // sentient
+
+
 export function component(name, init, Msg, update, view) {
   class Component extends ComponentBase {
     constructor(props) {
       super(props);
-      this.state = init();
+      this.state = { model: UNINITIALIZED };
       this.boundMsg = bindMsg(Msg, this.props._spindleDispatch);
     }
 
     shouldComponentUpdate(_, nextState) {
-      return !nextState.is(this.state);
+      return !Immutable.is(nextState.model, this.state.model);
     }
 
+    init = (...args) =>
+      this.setState({ model: init(...args) })
+
     render() {
-      return view(this.state, this.boundMsg);
+      return this.state.model === UNINITIALIZED
+        ? null  // render nothing until we have initial state
+        : view(this.state.model, this.boundMsg);
     }
   }
   Object.assign(Component, {
@@ -51,9 +59,24 @@ export class SpindleRoot extends React.Component {
     super(props);
   }
 
+  componentDidMount() {
+    this.componentInstance.init();
+  }
+
+  componentInstance = null
+
+  setRef = ref =>
+    this.componentInstance = ref
+
+  handleDispatch = payload =>
+    console.log('dispatch', payload)
+
   render() {
+    const { component: Component } = this.props;
     return (
-      <p>yo</p>
+      <Component
+          _spindleDispatch={this.handleDispatch}
+          ref={this.setRef} />
     );
   }
 };
