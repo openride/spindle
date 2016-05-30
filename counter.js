@@ -4,7 +4,6 @@ import React from 'react';
 import { Update, component } from './spindle';
 
 
-
 const Msg = Union({
   Increment: null,
   Decrement: null,
@@ -16,16 +15,25 @@ const Model = Immutable.Record({
 });
 
 
-const init = () => Model({
-  value: 0,
+const init = props => Model({
+  value: 0 || props.initialValue,
 });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const emitNewValue = (model, updater) => {
+  const newModel = model.update('value', updater);
+  return Update({
+    model: newModel,
+    emit: newModel.get('value'),
+  });
+};
+
+
+const update = (msg, model, props) => Msg.match(msg, {
   Increment: () =>
-    Update({ model: model.update('value', x => x + 1) }),
+    emitNewValue(model, x => x + 1),
   Decrement: () =>
-    Update({ model: model.update('value', x => x - 1) }),
+    emitNewValue(model, x => x - 1),
 });
 
 
@@ -38,4 +46,5 @@ const view = (model, boundMsg) => (
 );
 
 
-export default component('Counter', init, Msg, update, view)
+export default component('Counter',
+  { init, Msg, update, view });
