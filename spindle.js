@@ -43,8 +43,8 @@ export function component(name, init, Msg, update, view) {
 };
 
 
-const isSubclass = (A, B) =>
-  A.prototype instanceof B
+const isClass = (A, B) =>
+  A.prototype instanceof B || A === B
 
 export class SpindleRoot extends React.Component {
   constructor(props) {
@@ -59,9 +59,12 @@ export class SpindleRoot extends React.Component {
 };
 SpindleRoot.propTypes = {
   component: function(props, propName, componentName) {
-    if (!isSubclass(props[propName], ComponentBase)) {
-      const v = props[propName];
-      return new Error(`Invalid prop '${propName}' of type '${(v && v.name) ? v.name : 'unknown'}' supplied to '${componentName}'. Expected a Component instance created by 'spindle.component(...)'`);
+    const cls = props[propName];
+    if (typeof cls === 'undefined') {
+      return new Error(`Prop '${propName}' of ${componentName} is required`);
+    }
+    if (!isClass(cls, ComponentBase)) {
+      return new Error(`Prop '${propName}' of ${componentName} is a '${(cls && cls.name) ? cls.name : '???'}'. Expected a Component class created by 'spindle.component(...)'`);
     }
   },
 };
