@@ -19,7 +19,7 @@ const Msg = Union({
 
 
 const init = () =>
-  Model();
+  Update({ model: Model() });
 
 
 const update = (msg, model) => Msg.match(msg, {

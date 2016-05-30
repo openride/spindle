@@ -10,15 +10,19 @@ export const Update = Immutable.Record({
 });
 
 
-const bindMsg = (Msg, dispatch) =>
+const bindMsg = (Msg, update, c) =>
   Object.keys(Msg.options)
-    .map(k => ({ [k]: p => dispatch(Msg[k](p)) }))
+    .map(k => ({ [k]: msg => c.run(update(Msg[k](msg), c.state.model, c.props)) }))
     .reduce((a, b) => Object.assign(a, b), {});
 
 
-const spindle = () => ({
-  cmd: cmd => console.log('hi', cmd),
-});
+const createSpindle = () => {
+  return {
+    cmd: cmd => console.log('hi', cmd),
+    register: component => console.log('register hi there', component),
+    updateSubs: x => console.log('so you want to sub huh', x),
+  };
+};
 
 
 export function component(name, {
@@ -31,14 +35,25 @@ export function component(name, {
   class Component extends React.Component {
     constructor(props) {
       super(props);
-      this.state = { model: init(props) };
-      this._boundMsg = bindMsg(Msg, this.update.bind(this));
+      this.state = { model: null };
+      this._isSpindleRoot = null;
+      this._spindle = undefined;  // only for the root
+      this._unregister = null;
+      this._boundMsg = bindMsg(Msg, update, this);
+    }
+
+    componentDidMount() {
+      if (typeof this.context.spindle === 'undefined') {
+        this._isSpindleRoot = true;
+        this._spindle = createSpindle();
+      } else {
+        this._isSpindleRoot = false;
+      }
+      this._unregister = (this.context.spindle || this._spindle).register(this);
+      this.run(init(this.props));
     }
 
     getChildContext() {
-      if (!this.context.spindle && !this._spindle) {
-        this._spindle = spindle();
-      }
       return { spindle: this.context.spindle || this._spindle };
     }
 
@@ -46,19 +61,29 @@ export function component(name, {
       return !Immutable.is(nextState.model, this.state.model);
     }
 
+    componentWillUpdate(_, nextState) {
+      this.getSpindle().updateSubs(subscriptions(this.state.model));
+    }
+
+    componentWillUnmount() {
+      this._unregister();
+    }
+
     getSpindle() {
       return this.context.spindle || this._spindle;
     }
 
-    update(msg) {
-      const { model, cmd, emit } = update(msg, this.state.model).toObject();
+    run(update) {
+      const { model, cmd, emit } = update.toObject();
       model && this.setState({ model });
       cmd && this.getSpindle().cmd(cmd);
       emit && this.props.onEmit && this.props.onEmit(emit);
     }
 
     render() {
-      return view(this.state.model, this._boundMsg);
+      return this._isSpindleRoot === null  // ie., has initialized
+        ? null  // no model until postContextConstructor, after first render
+        : view(this.state.model, this._boundMsg);
     }
   }
   Object.assign(Component, {

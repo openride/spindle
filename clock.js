@@ -14,8 +14,8 @@ const Msg = Union({
 });
 
 
-const init = () => Model({
-  time: 0,
+const init = () => Update({
+  model: Model({ time: 0 }),
 });
 
 
