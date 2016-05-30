@@ -25,6 +25,7 @@ export function component(name, init, Msg, update, view) {
     constructor(props) {
       super(props);
       this.state = { model: UNINITIALIZED };
+      this.childRefs = {};
       this.boundMsg = bindMsg(Msg, this.props._spindleDispatch);
     }
 
@@ -35,15 +36,29 @@ export function component(name, init, Msg, update, view) {
     init = (...args) =>
       this.setState({ model: init(...args) })
 
+    forwardMsg = key => msg => {
+      this.childRefs[key].update(msg);
+      return Update();
+    };
+
     update = msg => {
-      const { model, cmd } = update(msg, this.state.model).toObject();
+      const { model, cmd } = update(msg, this.state.model, this.forwardMsg).toObject();
       this.setState({ model });
     }
+
+    mount = (Component, tagMsg, key) => (
+      <Component
+          _spindleDispatch={tagMsg}
+          ref={r => {
+            this.childRefs[key] = r;
+            r && r.init();
+          }} />
+    )
 
     render() {
       return this.state.model === UNINITIALIZED
         ? null  // render nothing until we have initial state
-        : view(this.state.model, this.boundMsg);
+        : view(this.state.model, this.boundMsg, this.mount);
     }
   }
   Object.assign(Component, {
