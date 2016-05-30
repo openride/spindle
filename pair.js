@@ -7,8 +7,8 @@ import Counter from './counter';
 
 
 const Model = Immutable.Record({
-  topValue: null,
-  bottomValue: null,
+  topValue: 5,
+  bottomValue: 0,
 });
 
 
@@ -34,8 +34,11 @@ const view = (model, boundMsg) => (
   <div>
     <p>some time stuff: <Clock /></p>
     <p>here are some counters:</p>
-    <Counter onEmit={boundMsg.Top} initialValue={0} />
-    <Counter onEmit={boundMsg.Bottom} initialValue={0} />
+    <Counter
+      onEmit={boundMsg.Top}
+      initialValue={model.get('topValue')} />
+    <Counter
+      onEmit={boundMsg.Bottom} />
     <p>their sum is: {model.get('topValue') + model.get('bottomValue')}</p>
   </div>
 );

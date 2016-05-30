@@ -46,5 +46,5 @@ const subscriptions = (model, boundMsg) =>
   [sub(seconds, boundMsg.Second)];
 
 
-export default component('Counter',
+export default component('Clock',
   { Msg, init, update, view, subscriptions });

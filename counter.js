@@ -17,7 +17,7 @@ const Msg = Union({
 
 const init = props => Update({
   model: Model({
-    value: 0 || props.initialValue,
+    value: props.initialValue || 0,
   }),
 });
 
