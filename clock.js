@@ -30,8 +30,8 @@ const view = model => (
 );
 
 
-const subscriptions = model =>
-  [Time.seconds(Msg.Tick)];
+const subscriptions = (model, boundMsg) =>
+  [Time.seconds(boundMsg.Tick)];
 
 
 export default component('Counter',

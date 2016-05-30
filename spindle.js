@@ -17,10 +17,17 @@ const bindMsg = (Msg, update, c) =>
 
 
 const createSpindle = () => {
+  let secondListeners = [];
+  window.setInterval(() => {
+    console.log('listening', secondListeners);
+    secondListeners.forEach(l => l.boundMsg(new Date()));
+  }, 1000);
+
   return {
     cmd: cmd => console.log('hi', cmd),
-    register: component => console.log('register hi there', component),
-    updateSubs: x => console.log('so you want to sub huh', x),
+    register: component => null,//console.log('register hi there', component),
+    updateSubs: x =>
+      secondListeners = secondListeners.concat(x),
   };
 };
 
@@ -62,7 +69,7 @@ export function component(name, {
     }
 
     componentWillUpdate(_, nextState) {
-      this.getSpindle().updateSubs(subscriptions(this.state.model));
+      this.getSpindle().updateSubs(subscriptions(this.state.model, this._boundMsg));
     }
 
     componentWillUnmount() {
@@ -96,4 +103,12 @@ export function component(name, {
     },
   });
   return Component;
+};
+
+
+export const Time = {
+  seconds: boundMsg => ({
+    boundMsg,
+    type: 'seconds',
+  }),
 };
