@@ -32,7 +32,7 @@ const update = (msg, model) => Msg.match(msg, {
 
 const view = (model, boundMsg) => (
   <div>
-    <p>the time is: <Clock /></p>
+    <p>some time stuff: <Clock /></p>
     <p>here are some counters:</p>
     <Counter onEmit={boundMsg.Top} initialValue={0} />
     <Counter onEmit={boundMsg.Bottom} initialValue={0} />

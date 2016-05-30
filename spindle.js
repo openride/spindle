@@ -5,29 +5,65 @@ import { Union } from './results';
 
 export const Update = Immutable.Record({
   model: undefined,
-  cmd: undefined,
+  cmds: undefined,
   emit: undefined,
 });
 
 
 const bindMsg = (Msg, update, c) =>
   Object.keys(Msg.options)
-    .map(k => ({ [k]: msg => c.run(update(Msg[k](msg), c.state.model, c.props)) }))
+    .map(k => ({ [k]: msg => c.run(update(Msg[k](msg), c.state.model, c.props, c._boundMsg)) }))
     .reduce((a, b) => Object.assign(a, b), {});
 
 
+export const Cmd = Immutable.Record({
+  run: null,
+  abort: null,
+});
+
+
+export const Sub = Immutable.Record({
+  key: null,
+  start: null,
+  stop: null,
+});
+
+
+export function cmd(c, boundMsg) {
+  return [ c, boundMsg ];
+}
+
+
+export function sub(s, boundMsg) {
+    return [ s, boundMsg ];
+}
+
+
+const ComponentEffects = Immutable.Record({
+  subs: Immutable.Set(),
+  cmds: Immutable.List(),
+});
+
+
 const createSpindle = () => {
-  let secondListeners = [];
-  window.setInterval(() => {
-    console.log('listening', secondListeners);
-    secondListeners.forEach(l => l.boundMsg(new Date()));
-  }, 1000);
+  let components = Immutable.Map();
+  let cmdQueue = Immutable.List();
 
   return {
-    cmd: cmd => console.log('hi', cmd),
-    register: component => null,//console.log('register hi there', component),
-    updateSubs: x =>
-      secondListeners = secondListeners.concat(x),
+    register: component =>
+      components = components.set(component, ComponentEffects()),
+    unregister: component => {
+      // abort cmds
+      // cancel subs
+      components = components.delete(component);
+    },
+    pushCmds: (component, cmds) => {
+      cmds.forEach(([ c, boundMsg ]) => {
+        c.get('run')(boundMsg);
+      });
+    },
+    updateSubs: (component, newSubs) => {
+    },
   };
 };
 
@@ -56,8 +92,8 @@ export function component(name, {
       } else {
         this._isSpindleRoot = false;
       }
-      this._unregister = (this.context.spindle || this._spindle).register(this);
-      this.run(init(this.props));
+      this.getSpindle().register(this);
+      this.run(init(this.props, this._boundMsg));
     }
 
     getChildContext() {
@@ -69,11 +105,12 @@ export function component(name, {
     }
 
     componentWillUpdate(_, nextState) {
-      this.getSpindle().updateSubs(subscriptions(this.state.model, this._boundMsg));
+      const subs = subscriptions(this.state.model, this._boundMsg);
+      this.getSpindle().updateSubs(this, subs);
     }
 
     componentWillUnmount() {
-      this._unregister();
+      this.getSpindle().unregister(this);
     }
 
     getSpindle() {
@@ -81,9 +118,9 @@ export function component(name, {
     }
 
     run(update) {
-      const { model, cmd, emit } = update.toObject();
+      const { model, cmds, emit } = update.toObject();
       model && this.setState({ model });
-      cmd && this.getSpindle().cmd(cmd);
+      cmds && this.getSpindle().pushCmds(this, cmds);
       emit && this.props.onEmit && this.props.onEmit(emit);
     }
 
@@ -103,12 +140,4 @@ export function component(name, {
     },
   });
   return Component;
-};
-
-
-export const Time = {
-  seconds: boundMsg => ({
-    boundMsg,
-    type: 'seconds',
-  }),
 };
