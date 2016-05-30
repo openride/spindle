@@ -47,7 +47,7 @@ const ComponentEffects = Immutable.Record({
 
 const createSpindle = () => {
   let components = Immutable.Map();
-  let cmdQueue = Immutable.List();
+  let subscriptions = Immutable.Map();
 
   return {
     register: component =>
@@ -62,7 +62,25 @@ const createSpindle = () => {
         c.get('run')(boundMsg);
       });
     },
-    updateSubs: (component, newSubs) => {
+    updateSubs: (component, subs) => {
+      subs.forEach(([ s, boundMsg ]) => {
+        const k = s.get('key');
+        if (!subscriptions.has(k)) {
+          const go = (state, msg) => {
+            subscriptions
+              .getIn([k, 'subscribers'])
+              .forEach(suber => suber(msg));
+            subscriptions = subscriptions.setIn([k, 'state'], state);
+          };
+          subscriptions = subscriptions.set(k, Immutable.Map({
+            msg: go,
+            state: s.start(go),
+            subscribers: Immutable.Set(),
+          }));
+        }
+        subscriptions = subscriptions.updateIn([k, 'subscribers'], subers =>
+          subers.add(boundMsg));
+      });
     },
   };
 };

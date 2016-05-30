@@ -1,8 +1,8 @@
 import { Union } from './results';
 import Immutable from 'immutable';
 import React from 'react';
-import { component, Update, cmd } from './spindle';
-import { tick } from './time';
+import { component, Update, cmd, sub } from './spindle';
+import { tick, seconds } from './time';
 
 
 const Model = Immutable.Record({
@@ -47,4 +47,4 @@ const subscriptions = (model, boundMsg) =>
 
 
 export default component('Counter',
-  { Msg, init, update, view });
+  { Msg, init, update, view, subscriptions });
