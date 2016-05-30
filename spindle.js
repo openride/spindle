@@ -3,8 +3,8 @@ import Immutable from 'immutable';
 
 
 export const Update = Immutable.Record({
-  model: {},  // sentient object w/ its own identity
-  cmd: {},
+  model: undefined,  // sentient object w/ its own identity
+  cmd: undefined,
 });
 
 
@@ -34,6 +34,11 @@ export function component(name, init, Msg, update, view) {
 
     init = (...args) =>
       this.setState({ model: init(...args) })
+
+    update = msg => {
+      const { model, cmd } = update(msg, this.state.model).toObject();
+      this.setState({ model });
+    }
 
     render() {
       return this.state.model === UNINITIALIZED
@@ -69,7 +74,7 @@ export class SpindleRoot extends React.Component {
     this.componentInstance = ref
 
   handleDispatch = payload =>
-    console.log('dispatch', payload)
+    this.componentInstance.update(payload)
 
   render() {
     const { component: Component } = this.props;
