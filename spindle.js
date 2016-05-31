@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import Immutable from 'immutable';
-import { Union } from './results';
+import { Union } from 'results';
 
 
 export const Update = Immutable.Record({
@@ -87,7 +87,7 @@ const createSpindle = () => {
 
 
 export function component(name, {
-  init,
+  Model,
   Msg,
   update,
   view,
@@ -111,7 +111,7 @@ export function component(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(init(this.props, this._boundMsg));
+      this.run(Update({ model: Model() }));
     }
 
     getChildContext() {
