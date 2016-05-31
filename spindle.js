@@ -87,8 +87,8 @@ const createSpindle = () => {
 
 
 export function component(name, {
-  Model,
-  Msg,
+  Model = Immutable.Record({}),
+  Msg = Union({}),
   update,
   view,
   subscriptions = () => [],
