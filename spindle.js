@@ -16,6 +16,16 @@ const bindMsg = (Msg, update, c) =>
     .reduce((a, b) => Object.assign(a, b), {});
 
 
+const propsEq = (a, b) => {
+  for (const k in a) {
+    if (a[k] !== b[k] && k !== 'onEmit' && k !== 'children') return false;
+  }
+  const aCount = Object.keys(a).length - !!a.onEmit - !!a.children;
+  const bCount = Object.keys(b).length - !!b.onEmit - !!b.children;
+  return aCount === bCount;
+};
+
+
 export const Cmd = Immutable.Record({
   run: null,
   abort: null,
@@ -89,6 +99,7 @@ const createSpindle = () => {
 export function component(name, {
   Model = Immutable.Record({}),
   Msg = Union({}),
+  handleProps = (_, model) => Update({ model }),
   update,
   view,
   subscriptions = () => [],
@@ -111,11 +122,17 @@ export function component(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(Update({ model: Model() }));
+      this.run(handleProps(this.props, Model()));
     }
 
     getChildContext() {
       return { spindle: this.context.spindle || this._spindle };
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (!propsEq(this.props, nextProps)) {
+        this.run(handleProps(nextProps, this.state.model));
+      }
     }
 
     shouldComponentUpdate(_, nextState) {
@@ -139,7 +156,7 @@ export function component(name, {
       const { model, cmds, emit } = update.toObject();
       model && this.setState({ model });
       cmds && this.getSpindle().pushCmds(this, cmds);
-      emit && this.props.onEmit && this.props.onEmit(emit);
+      typeof emit !== 'undefined' && this.props.onEmit && this.props.onEmit(emit);
     }
 
     render() {
