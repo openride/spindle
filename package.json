@@ -8,7 +8,8 @@
     "build": "browserify app.js -t babelify --outfile bundle.js",
     "watch-counter": "watchify examples/counter/app.js -d -t babelify --outfile bundle.js",
     "watch-pair": "watchify examples/pair-of-counters/app.js -d -t babelify --outfile bundle.js",
-    "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js"
+    "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js",
+    "watch-sum": "watchify examples/sum-counters/app.js -d -t babelify --outfile bundle.js"
   },
   "author": "uniphil",
   "license": "GPL",
