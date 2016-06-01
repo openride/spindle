@@ -12,7 +12,8 @@ export const Update = Immutable.Record({
 
 const bindMsg = (Msg, update, c) =>
   Object.keys(Msg.options)
-    .map(k => ({ [k]: msg => c.run(update(Msg[k](msg), c.state.model, c.props, c._boundMsg)) }))
+    .map(k => ({ [k]: msg =>
+      c.run(update(Msg[k](msg), c.state.model, c._boundMsg)) }))
     .reduce((a, b) => Object.assign(a, b), {});
 
 
@@ -135,8 +136,9 @@ export function component(name, {
       }
     }
 
-    shouldComponentUpdate(_, nextState) {
-      return !Immutable.is(nextState.model, this.state.model);
+    shouldComponentUpdate(nextProps, nextState) {
+      return nextProps.children !== this.props.children ||  // is this first check necessary?
+            !Immutable.is(nextState.model, this.state.model);
     }
 
     componentWillUpdate(_, nextState) {
@@ -162,7 +164,7 @@ export function component(name, {
     render() {
       return this._isSpindleRoot === null  // ie., has initialized
         ? null  // no model until postContextConstructor, after first render
-        : view(this.state.model, this._boundMsg);
+        : view(this.state.model, this._boundMsg, this.props.children);
     }
   }
   Object.assign(Component, {
