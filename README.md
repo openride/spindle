@@ -11,7 +11,7 @@ lines of JS, it's almost free to add to your project.
 Spindle lets you make components out of a **Model**, **Msg** (for actions), an
 **update** function, and a **view** function. For example, a simple counter:
 
-```js
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Record } from 'immutable';
@@ -62,7 +62,7 @@ components.
 
 A cheeky example: here is how to write a pair of the above counters
 
-```js
+```jsx
 const pairView = () => (
   <div>
     <Counter />
