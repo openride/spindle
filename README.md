@@ -16,7 +16,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Record } from 'immutable';
 import { Union } from 'results';
-import { component, Update } from 'spindle';
+import { component, Update } from 'spindle-ui';
 
 const Model = Record({
   value: 0,
