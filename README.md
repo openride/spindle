@@ -76,4 +76,9 @@ const Pair = component('Pair', { view: pairView });
 ReactDOM.render(<Pair />, document.getElementById('app'));
 ```
 
-Proper docs coming soon... :)
+Proper docs coming soon! In the mean time, check out [examples/](examples/)
+
+- [List of counters](examples/n-counters) for managing dynamic children
+- [Sum of counters](examples/sum-counters) for passing data up to parents
+- [Constrained counters](examples/constrained-counters) passes data to children
+- [Wrapper](examples/wrapper) implements a Box component that can wrap children
