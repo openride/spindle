@@ -1,11 +1,12 @@
 {
-  "name": "spindle",
-  "version": "0.0.0",
-  "description": "spindly framework",
-  "main": "app.js",
+  "name": "spindle-ui",
+  "version": "0.0.1",
+  "description": "A tiny helper for structuring React components in a way that's easy to create, maintain, reuse, and scale",
+  "main": "spindle.dist.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify app.js -t babelify --outfile bundle.js",
+    "prepublish": "babel --source-maps inline --out-file spindle.dist.js spindle.js",
     "watch-counter": "watchify examples/counter/app.js -d -t babelify --outfile bundle.js",
     "watch-pair": "watchify examples/pair-of-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js",
@@ -15,7 +16,12 @@
   },
   "author": "uniphil",
   "license": "GPL",
-  "dependencies": {
+  "peerDependencies": {
+    "immutable": "^3.8.1",
+    "react": "^15.1.0",
+    "results": "^0.14.0"
+  },
+  "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-plugin-transform-class-properties": "^6.9.0",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
@@ -23,10 +29,9 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
-    "immutable": "^3.8.1",
-    "react": "^15.1.0",
     "react-dom": "^15.1.0",
-    "results": "^0.14.0",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
   }
 }
