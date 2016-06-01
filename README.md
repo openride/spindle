@@ -51,11 +51,12 @@ ReactDOM.render(<Counter />, document.getElementById('app'));
 ```
 
 Simpler components might only need a **view**, while more complicated components
-can use **commands** and **subscriptions** to get domain data and side-effects
-in and out.
+can use **handleProps** to get data from parents, and **commands** and
+**subscriptions** to get domain data and side-effects in and out. With that,
+I've already name-dropped everything in spindle's component API!
 
 spindle takes inspiration from the amazing [elm](http://elm-lang.org/) language
-and architecture, but leverages React do the bookkeeping. This making it
+and architecture, but leverages React to do the bookkeeping. This making it
 incredibly easy to nest components and add features without touching any parent
 components.
 
