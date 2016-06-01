@@ -1,9 +1,15 @@
 # Spindle
 
-An alternative, small, functional API for creating react components and
-communicating between them, including elm-inspired commands and subscriptions.
+Spindle is a tiny helper for structuring React components in a way that's easy
+to create, maintain, reuse, and scale. And it's _really fast_, for free!
 
-Blah blah blah
+**Spindle creates just plain-old regular React components**, so you can
+immediately drop them into any React project, and you can always nest other
+React components inside spindle components. There is no tie-in. And at < 200
+lines of JS, it's almost free to add to your project.
+
+Spindle lets you make components out of a **Model**, **Msg** (for actions), an
+**update** function, and a **view** function. For example, a simple counter:
 
 ```js
 import React from 'react';
@@ -13,7 +19,7 @@ import { Union } from 'results';
 import { component, Update } from 'spindle';
 
 const Model = Record({
-  value: 0
+  value: 0,
 });
 
 const Msg = Union({
@@ -43,3 +49,29 @@ const Counter = component('Counter',
 
 ReactDOM.render(<Counter />, document.getElementById('app'));
 ```
+
+Simpler components might only need a **view**, while more complicated components
+can use **commands** and **subscriptions** to get domain data and side-effects
+in and out.
+
+spindle takes inspiration from the amazing [elm](http://elm-lang.org/) language
+and architecture, but leverages React do the bookkeeping. This making it
+incredibly easy to nest components and add features without touching any parent
+components.
+
+A cheeky example: here is how to write a pair of the above counters
+
+```js
+const pairView = () => (
+  <div>
+    <Counter />
+    <Counter />
+  </div>
+);
+
+const Pair = component('Pair', { view: pairView });
+
+ReactDOM.render(<Pair />, document.getElementById('app'));
+```
+
+Proper docs coming soon... :)
