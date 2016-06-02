@@ -109,7 +109,7 @@ export function component(name, {
   class Component extends React.Component {
     constructor(props) {
       super(props);
-      this.state = { model: null };
+      this.state = { model: Model() };
       this._isSpindleRoot = null;
       this._spindle = undefined;  // only for the root
       this._unregister = null;
@@ -124,7 +124,7 @@ export function component(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(handleProps(this.props, Model()));
+      this.run(handleProps(this.props, this.state.model, this._boundMsg));
     }
 
     getChildContext() {
@@ -133,7 +133,7 @@ export function component(name, {
 
     componentWillReceiveProps(nextProps) {
       if (!propsEq(this.props, nextProps)) {
-        this.run(handleProps(nextProps, this.state.model));
+        this.run(handleProps(nextProps, this.state.model, this._boundMsg));
       }
     }
 
@@ -155,10 +155,11 @@ export function component(name, {
       return this.context.spindle || this._spindle;
     }
 
+
     run(update) {
       const { model, cmds, emit } = update.toObject();
       model && this.setState({ model });
-      cmds && this.getSpindle().pushCmds(this, cmds);
+      cmds && this.getSpindle().pushCmds(this, cmds, model);
       typeof emit !== 'undefined' && this.props.onEmit && this.props.onEmit(emit);
     }
 
