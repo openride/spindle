@@ -82,3 +82,4 @@ Proper docs coming soon! In the mean time, check out [examples/](examples/)
 - [Sum of counters](examples/sum-counters) for passing data up to parents
 - [Constrained counters](examples/constrained-counters) passes data to children
 - [Wrapper](examples/wrapper) implements a Box component that can wrap children
+- [Clock](examples/clock) subscribes to `seconds` to show the current time

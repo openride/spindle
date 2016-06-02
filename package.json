@@ -12,7 +12,8 @@
     "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-sum": "watchify examples/sum-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-constrained": "watchify examples/constrained-counters/app.js -d -t babelify --outfile bundle.js",
-    "watch-wrap": "watchify examples/wrapper/app.js -d -t babelify --outfile bundle.js"
+    "watch-wrap": "watchify examples/wrapper/app.js -d -t babelify --outfile bundle.js",
+    "watch-clock": "watchify examples/clock/app.js -d -t babelify --outfile bundle.js"
   },
   "author": "uniphil",
   "license": "GPL",
