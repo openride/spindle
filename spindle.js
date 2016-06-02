@@ -110,9 +110,11 @@ export function component(name, {
     constructor(props) {
       super(props);
       this.state = { model: Model() };
+      this._hasInitialized = false;
       this._isSpindleRoot = null;
       this._spindle = undefined;  // only for the root
       this._unregister = null;
+      this._cmdQueue = [];
       this._boundMsg = bindMsg(Msg, update, this);
     }
 
@@ -125,6 +127,8 @@ export function component(name, {
       }
       this.getSpindle().register(this);
       this.run(handleProps(this.props, this.state.model, this._boundMsg));
+      this._hasInitialized = true;
+      this.forceUpdate();  // grosssssssssss
     }
 
     getChildContext() {
@@ -147,6 +151,11 @@ export function component(name, {
       this.getSpindle().updateSubs(this, subs);
     }
 
+    componentDidUpdate() {
+      this.getSpindle().pushCmds(this, this._cmdQueue);
+      this._cmdQueue = [];
+    }
+
     componentWillUnmount() {
       this.getSpindle().unregister(this);
     }
@@ -159,14 +168,14 @@ export function component(name, {
     run(update) {
       const { model, cmds, emit } = update.toObject();
       model && this.setState({ model });
-      cmds && this.getSpindle().pushCmds(this, cmds, model);
+      cmds && (this._cmdQueue = this._cmdQueue.concat(cmds));
       typeof emit !== 'undefined' && this.props.onEmit && this.props.onEmit(emit);
     }
 
     render() {
-      return this._isSpindleRoot === null  // ie., has initialized
-        ? null  // no model until postContextConstructor, after first render
-        : view(this.state.model, this._boundMsg, this.props.children);
+      return this._hasInitialized
+        ? view(this.state.model, this._boundMsg, this.props.children)
+        : null;  // can't mount children until we can set up context
     }
   }
   Object.assign(Component, {
