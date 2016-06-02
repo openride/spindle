@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Record } from 'immutable';
 import { component, Update } from '../../spindle';
 
@@ -6,6 +6,11 @@ import { component, Update } from '../../spindle';
 const Model = Record({
   title: null,
 });
+
+
+const propTypes = {
+  title: PropTypes.string.isRequired,
+};
 
 
 const handleProps = (props, model) =>
@@ -25,4 +30,4 @@ const view = (model, _, children) => (
 
 
 module.exports = component('Box',
-  { Model, handleProps, view });
+  { Model, propTypes, handleProps, view });

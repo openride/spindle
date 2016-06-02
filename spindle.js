@@ -104,6 +104,7 @@ export function component(name, {
   update,
   view,
   subscriptions = () => [],
+  propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
     constructor(props) {
@@ -170,11 +171,15 @@ export function component(name, {
   Object.assign(Component, {
     displayName: name,
     contextTypes: {
-      spindle: React.PropTypes.object,
+      spindle: PropTypes.object,
     },
     childContextTypes: {
-      spindle: React.PropTypes.object,
+      spindle: PropTypes.object,
     },
+    propTypes: {
+      ...componentPropTypes,
+      onEmit: PropTypes.func,  // optional
+    }
   });
   return Component;
 };
