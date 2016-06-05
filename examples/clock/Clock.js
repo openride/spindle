@@ -5,14 +5,18 @@ import { component, Update, sub } from '../../spindle';
 import { seconds } from '../../time';
 
 
+const Msg = Union({
+SetTime: null,
+});
+
+
 const Model = Record({
   time: Maybe.None(),  // not initialized
 });
 
 
-const Msg = Union({
-  SetTime: null
-});
+const init = () =>
+  Update({ model: Model() });
 
 
 const update = (msg, model) => Msg.match(msg, {
@@ -36,4 +40,4 @@ const view = model => Maybe.match(model.get('time'), {
 
 
 export default component('Clock',
-  { Model, Msg, update, subscriptions, view });
+  { Msg, init, update, subscriptions, view });

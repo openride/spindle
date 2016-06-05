@@ -19,10 +19,10 @@ const bindMsg = (Msg, update, c) =>
 
 const propsEq = (a, b) => {
   for (const k in a) {
-    if (a[k] !== b[k] && k !== 'onEmit' && k !== 'children') return false;
+    if (a[k] !== b[k] && k !== 'onEmit') return false;
   }
-  const aCount = Object.keys(a).length - !!a.onEmit - !!a.children;
-  const bCount = Object.keys(b).length - !!b.onEmit - !!b.children;
+  const aCount = Object.keys(a).length - !!a.onEmit;
+  const bCount = Object.keys(b).length - !!b.onEmit;
   return aCount === bCount;
 };
 
@@ -98,18 +98,18 @@ const createSpindle = () => {
 
 
 export function component(name, {
-  Model = Immutable.Record({}),
   Msg = Union({}),
-  handleProps = (_, model) => Update({ model }),
-  update,
-  view,
+  init = () => Update(),
+  propsUpdate = () => Update(),
+  update = () => Update(),
+  view = () => null,
   subscriptions = () => [],
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
     constructor(props) {
       super(props);
-      this.state = { model: Model() };
+      this.state = { model: null };
       this._hasInitialized = false;
       this._isSpindleRoot = null;
       this._spindle = undefined;  // only for the root
@@ -126,7 +126,7 @@ export function component(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(handleProps(this.props, this.state.model, this._boundMsg));
+      this.run(init(this.props, this._boundMsg));
       this._hasInitialized = true;
       this.forceUpdate();  // grosssssssssss
     }
@@ -137,13 +137,13 @@ export function component(name, {
 
     componentWillReceiveProps(nextProps) {
       if (!propsEq(this.props, nextProps)) {
-        this.run(handleProps(nextProps, this.state.model, this._boundMsg));
+        this.run(propsUpdate(nextProps, this.state.model, this._boundMsg));
       }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      return nextProps.children !== this.props.children ||  // is this first check necessary?
-            !Immutable.is(nextState.model, this.state.model);
+      return !propsEq(nextProps, this.props) ||
+             !Immutable.is(nextState.model, this.state.model);
     }
 
     componentWillUpdate(_, nextState) {
@@ -174,7 +174,7 @@ export function component(name, {
 
     render() {
       return this._hasInitialized
-        ? view(this.state.model, this._boundMsg, this.props.children)
+        ? view(this.state.model, this._boundMsg, this.props)
         : null;  // can't mount children until we can set up context
     }
   }

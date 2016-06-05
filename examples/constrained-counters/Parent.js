@@ -5,16 +5,20 @@ import { component, Update } from '../../spindle';
 import Counter from './Counter';
 
 
+const Msg = Union({
+  SetMin: null,
+  SetMax: null,
+});
+
+
 const Model = Record({
   min: 0,
   max: 0,
 });
 
 
-const Msg = Union({
-  SetMin: null,
-  SetMax: null,
-});
+const init = () =>
+  Update({ model: Model() });
 
 
 const update = (msg, model) => Msg.match(msg, {
@@ -47,4 +51,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Parent',
-  { Model, Msg, update, view });
+  { Msg, init, update, view });

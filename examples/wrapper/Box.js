@@ -3,31 +3,23 @@ import { Record } from 'immutable';
 import { component, Update } from '../../spindle';
 
 
-const Model = Record({
-  title: null,
-});
-
-
 const propTypes = {
   title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 
-const handleProps = (props, model) =>
-  Update({ model: model.set('title', props.title ) });
-
-
-const view = (model, _, children) => (
+const view = (_, __, props) => (
   <div style={{ border: '1px solid #f6f', margin: '1em 0', width: '50%' }}>
     <h2 style={{ background: '#f6f', margin: 0 }}>
-      {model.get('title')}
+      {props.title}
     </h2>
     <div style={{ padding: '1em' }}>
-      {children}
+      {props.children}
     </div>
   </div>
 );
 
 
 module.exports = component('Box',
-  { Model, propTypes, handleProps, view });
+  { propTypes, view });

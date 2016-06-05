@@ -4,15 +4,19 @@ import { Record } from 'immutable';
 import { component, Update } from '../../spindle';
 
 
+const Msg = Union({
+  Increment: null,
+  Decrement: null,
+});
+
+
 const Model = Record({
   value: 0,
 });
 
 
-const Msg = Union({
-  Increment: null,
-  Decrement: null,
-});
+const init = () =>
+  Update({ model: Model() });
 
 
 const update = (msg, model) => Msg.match(msg, {
@@ -34,4 +38,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Counter',
-  { Model, Msg, update, view });
+  { Msg, init, update, view });

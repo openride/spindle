@@ -5,15 +5,19 @@ import { component, Update } from '../../spindle';
 import Counter from '../counter/counter';
 
 
+const Msg = Union({
+  Add: null,
+  Remove: null,
+});
+
+
 const Model = Record({
   counters: Immutable.List([]),
 });
 
 
-const Msg = Union({
-  Add: null,
-  Remove: null,
-});
+const init = () =>
+  Update({ model: Model() });
 
 
 const update = (msg, model) => Msg.match(msg, {
@@ -40,4 +44,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('NCounters',
-  { Msg, Model, update, view });
+  { Msg, init, update, view });

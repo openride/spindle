@@ -9,6 +9,10 @@ const Model = Record({
 });
 
 
+const init = () =>
+  Update({ model: Model() });
+
+
 const Msg = Union({
   Increment: null,
   Decrement: null,
@@ -44,4 +48,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Counter',
-  { Model, Msg, update, view });
+  { Msg, init, update, view });

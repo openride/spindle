@@ -18,40 +18,38 @@ import { Record } from 'immutable';
 import { Union } from 'results';
 import { component, Update } from 'spindle-ui';
 
-const Model = Record({
-  value: 0,
-});
-
 const Msg = Union({
   Increment: null,
   Decrement: null,
 });
 
+const init = () =>
+  Update({ model: 0 });
+
 const update = (msg, model) => Msg.match(msg, {
   Increment: () =>
-    Update({ model: model.update('value', v => v + 1) }),
+    Update({ model: model + 1 }),
   Decrement: () =>
-    Update({ model: model.update('value', v => v - 1) }),
+    Update({ model: model - 1 }),
 });
 
 const view = (model, BoundMsg) => (
   <p>
     <button onClick={BoundMsg.Decrement}>-</button>
-    {model.get('value')}
+    {model}
     <button onClick={BoundMsg.Increment}>+</button>
   </p>
 );
 
-
 const Counter = component('Counter',
-  { Model, Msg, update, view });
+  { Msg, init, update, view });
 
 
 ReactDOM.render(<Counter />, document.getElementById('app'));
 ```
 
 Simpler components might only need a **view**, while more sophisticated
-components can use **handleProps** and **onEmit** to pass data between parents
+components can use **propsUpdate** and **onEmit** to pass data between parents
 and children, and **commands** and **subscriptions** to get domain data and
 side-effects in and out. With that, I've already name-dropped everything in
 spindle's component API!

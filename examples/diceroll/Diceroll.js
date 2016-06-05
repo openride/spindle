@@ -16,11 +16,11 @@ const Msg = Union({
 });
 
 
-// handleProps is called once after the component mounts
-const handleProps = (_, model, BoundMsg) => Maybe.match(model.get('value'), {
-  Some: () => Update(),
-  None: () => Update({ model, cmds: [ cmd(random, BoundMsg.Set) ] }),
-});
+const init = (_, BoundMsg) =>
+  Update({
+    model: Model(),
+    cmds: [ cmd(random, BoundMsg.Set) ],
+  });
 
 
 const update = (msg, model, BoundMsg) => Msg.match(msg, {
@@ -61,4 +61,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Diceroll',
-  { Model, Msg, handleProps, update, view });
+  { Msg, init, update, view });

@@ -24,11 +24,15 @@ const constrain = model => {
 }
 
 
-const handleProps = ({ min = -Infinity, max = Infinity }, model) =>
+const init = props =>
+  propsUpdate(props, Model());
+
+
+const propsUpdate = ({ min = -Infinity, max = Infinity }, model) =>
   Update({ model: constrain(model.merge({ min, max })) });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (msg, model, _, props) => Msg.match(msg, {
   Increment: () => {
     const newModel = constrain(model.update('value', v => v + 1));
     return Update({
@@ -65,4 +69,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Counter',
-  { Model, Msg, handleProps, update, view });
+  { Msg, init, propsUpdate, update, view });
