@@ -16,18 +16,18 @@ const Msg = Union({
 });
 
 
-const init = (_, BoundMsg) =>
+const init = () =>
   Update({
     model: Model(),
-    cmds: [ cmd(random, BoundMsg.Set) ],
+    cmds: [ cmd(random, Msg.Set) ],
   });
 
 
-const update = (msg, model, BoundMsg) => Msg.match(msg, {
+const update = (msg, model) => Msg.match(msg, {
   Roll: () =>
     Update({
       model: model.set('value', Maybe.None()),
-      cmds: [ cmd(random, BoundMsg.Set) ],
+      cmds: [ cmd(random, Msg.Set) ],
     }),
 
   Set: randomValue => {
@@ -39,7 +39,7 @@ const update = (msg, model, BoundMsg) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <div>
     {Maybe.match(model.get('value'), {
       Some: v => (
@@ -52,7 +52,7 @@ const view = (model, BoundMsg) => (
     <p>
       <button
         disabled={model.get('value').isNone()}
-        onClick={BoundMsg.Roll}>
+        onClick={dispatch.Roll}>
         Roll again
       </button>
     </p>

@@ -28,11 +28,11 @@ const update = (msg, model) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <p>
-    <button onClick={BoundMsg.Decrement}>-</button>
+    <button onClick={dispatch.Decrement}>-</button>
     {model.get('value')}
-    <button onClick={BoundMsg.Increment}>+</button>
+    <button onClick={dispatch.Increment}>+</button>
   </p>
 );
 

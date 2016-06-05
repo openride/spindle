@@ -30,11 +30,11 @@ const update = (msg, model) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <div>
     <p>min</p>
     <Counter
-      onEmit={BoundMsg.SetMin}
+      onEmit={dispatch.SetMin}
       max={model.get('max')} />
 
     <p>val</p>
@@ -44,7 +44,7 @@ const view = (model, BoundMsg) => (
 
     <p>max</p>
     <Counter
-      onEmit={BoundMsg.SetMax}
+      onEmit={dispatch.SetMax}
       min={model.get('min')} />
   </div>
 );

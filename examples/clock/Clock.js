@@ -5,11 +5,6 @@ import { component, Update, sub } from '../../spindle';
 import { seconds } from '../../time';
 
 
-const Msg = Union({
-SetTime: null,
-});
-
-
 const Model = Record({
   time: Maybe.None(),  // not initialized
 });
@@ -19,14 +14,12 @@ const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) => Msg.match(msg, {
-  SetTime: newTime =>
-    Update({ model: model.set('time', Maybe.Some(newTime)) }),
-});
+const update = (msg, model) =>
+  Update({ model: model.set('time', Maybe.Some(msg)) });
 
 
-const subscriptions = (model, BoundMsg) =>
-  [ sub(seconds, BoundMsg.SetTime) ]
+const subscriptions = model =>
+  [ sub(seconds, x => x) ]
 
 
 const view = model => Maybe.match(model.get('time'), {
@@ -40,4 +33,4 @@ const view = model => Maybe.match(model.get('time'), {
 
 
 export default component('Clock',
-  { Msg, init, update, subscriptions, view });
+  { init, update, subscriptions, view });

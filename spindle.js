@@ -10,13 +10,6 @@ export const Update = Immutable.Record({
 });
 
 
-const bindMsg = (Msg, update, c) =>
-  Object.keys(Msg.options)
-    .map(k => ({ [k]: msg =>
-      c.run(update(Msg[k](msg), c.state.model, c._boundMsg)) }))
-    .reduce((a, b) => Object.assign(a, b), {});
-
-
 const propsEq = (a, b) => {
   for (const k in a) {
     if (a[k] !== b[k] && k !== 'onEmit') return false;
@@ -40,13 +33,13 @@ export const Sub = Immutable.Record({
 });
 
 
-export function cmd(c, boundMsg) {
-  return [ c, boundMsg ];
+export function cmd(c, Tag) {
+  return [ c, Tag ];
 }
 
 
-export function sub(s, boundMsg) {
-    return [ s, boundMsg ];
+export function sub(s, Tag) {
+    return [ s, Tag ];
 }
 
 
@@ -69,12 +62,12 @@ const createSpindle = () => {
       components = components.delete(component);
     },
     pushCmds: (component, cmds) => {
-      cmds.forEach(([ c, boundMsg ]) => {
-        c.get('run')(boundMsg);
+      cmds.forEach(([ c, Tag ]) => {
+        c.get('run')(payload => component._dispatch(Tag(payload)));
       });
     },
     updateSubs: (component, subs) => {
-      subs.forEach(([ s, boundMsg ]) => {
+      subs.forEach(([ s, Tag ]) => {
         const k = s.get('key');
         if (!subscriptions.has(k)) {
           const go = (state, msg) => {
@@ -86,15 +79,20 @@ const createSpindle = () => {
           subscriptions = subscriptions.set(k, Immutable.Map({
             msg: go,
             state: s.start(go),
-            subscribers: Immutable.Set(),
+            subscribers: Immutable.Map(),
           }));
         }
-        subscriptions = subscriptions.updateIn([k, 'subscribers'], subers =>
-          subers.add(boundMsg));
+        subscriptions = subscriptions.setIn([k, 'subscribers', Tag],
+          payload => component._dispatch(Tag(payload)));
       });
     },
   };
 };
+
+
+const bindMsgs = (dispatch, Msg) =>
+  Object.keys(Msg.options).forEach(k =>
+    dispatch[k] = payload => dispatch(Msg[k](payload)));
 
 
 export function component(name, {
@@ -115,7 +113,8 @@ export function component(name, {
       this._spindle = undefined;  // only for the root
       this._unregister = null;
       this._cmdQueue = [];
-      this._boundMsg = bindMsg(Msg, update, this);
+      this._dispatch = msg => this.run(update(msg, this.state.model));
+      bindMsgs(this._dispatch, Msg);
     }
 
     componentDidMount() {
@@ -126,7 +125,7 @@ export function component(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(init(this.props, this._boundMsg));
+      this.run(init(this.props));
       this._hasInitialized = true;
       this.forceUpdate();  // grosssssssssss
     }
@@ -137,7 +136,7 @@ export function component(name, {
 
     componentWillReceiveProps(nextProps) {
       if (!propsEq(this.props, nextProps)) {
-        this.run(propsUpdate(nextProps, this.state.model, this._boundMsg));
+        this.run(propsUpdate(nextProps, this.state.model));
       }
     }
 
@@ -147,7 +146,7 @@ export function component(name, {
     }
 
     componentWillUpdate(_, nextState) {
-      const subs = subscriptions(this.state.model, this._boundMsg);
+      const subs = subscriptions(this.state.model);
       this.getSpindle().updateSubs(this, subs);
     }
 
@@ -174,7 +173,7 @@ export function component(name, {
 
     render() {
       return this._hasInitialized
-        ? view(this.state.model, this._boundMsg, this.props)
+        ? view(this.state.model, this._dispatch, this.props)
         : null;  // can't mount children until we can set up context
     }
   }

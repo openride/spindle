@@ -29,12 +29,12 @@ const update = (msg, model) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <div>
     <p>all the counters you could want...</p>
     <p>
-      <button onClick={BoundMsg.Add}>Add another</button>
-      <button onClick={BoundMsg.Remove}>Remove one</button>
+      <button onClick={dispatch.Add}>Add another</button>
+      <button onClick={dispatch.Remove}>Remove one</button>
     </p>
     {model.get('counters').map(id => (
       <Counter key={id} />

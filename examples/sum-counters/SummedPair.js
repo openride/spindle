@@ -30,11 +30,11 @@ const update = (msg, model) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <div>
     <p>here are some counters:</p>
-    <Counter onEmit={BoundMsg.TopValue} />
-    <Counter onEmit={BoundMsg.BottomValue} />
+    <Counter onEmit={dispatch.TopValue} />
+    <Counter onEmit={dispatch.BottomValue} />
     <p>their sum is: {model.get('topValue') + model.get('bottomValue')}</p>
   </div>
 );
