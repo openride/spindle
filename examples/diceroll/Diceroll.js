@@ -1,7 +1,7 @@
 import React from 'react';
 import { Record } from 'immutable';
 import { Union, Maybe } from 'results';
-import { component, Update, cmd } from '../../spindle';
+import Spindle, { Update, cmd } from '../../spindle';
 import { random } from '../../random';
 
 
@@ -60,5 +60,5 @@ const view = (model, dispatch) => (
 );
 
 
-export default component('Diceroll',
+export default Spindle('Diceroll',
   { Action, init, update, view });

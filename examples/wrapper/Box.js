@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Record } from 'immutable';
-import { component, Update } from '../../spindle';
+import Spindle from '../../spindle';
 
 
 const propTypes = {
@@ -21,5 +20,4 @@ const view = (_, __, props) => (
 );
 
 
-module.exports = component('Box',
-  { propTypes, view });
+module.exports = Spindle('Box', { propTypes, view });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Record } from 'immutable';
 import { Union } from 'results';
-import { component, Update } from '../../spindle';
+import Spindle, { Update } from '../../spindle';
 
 
 const Model = Record({
@@ -47,5 +47,5 @@ const view = (model, dispatch) => (
 );
 
 
-export default component('Counter',
+export default Spindle('Counter',
   { Action, init, update, view });

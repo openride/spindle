@@ -1,7 +1,7 @@
 import React from 'react';
 import { Record } from 'immutable';
 import { Union, Maybe } from 'results';
-import { component, Update, sub } from '../../spindle';
+import Spindle, { Update, sub } from '../../spindle';
 import { seconds } from '../../time';
 
 
@@ -32,5 +32,5 @@ const view = model => Maybe.match(model.get('time'), {
 });
 
 
-export default component('Clock',
+export default Spindle('Clock',
   { init, update, subscriptions, view });

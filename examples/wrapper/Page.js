@@ -1,5 +1,5 @@
 import React from 'react';
-import { component } from '../../spindle';
+import Spindle from '../../spindle';
 import Box from './Box';
 
 
@@ -20,5 +20,4 @@ const view = () => (
 );
 
 
-export default component('Page',
-  { view });
+export default Spindle('Page', { view });

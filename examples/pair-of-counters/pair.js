@@ -1,6 +1,6 @@
 import React from 'react';
 import Counter from '../counter/counter';
-import { component } from '../../spindle';
+import Spindle from '../../spindle';
 
 
 const view = () => (
@@ -12,5 +12,4 @@ const view = () => (
 );
 
 
-export default component('Pair',
-  { view });
+export default Spindle('Pair', { view });

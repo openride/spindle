@@ -95,7 +95,7 @@ const bindActions = (dispatch, Action) =>
     dispatch[k] = payload => dispatch(Action[k](payload)));
 
 
-export function component(name, {
+export default function Spindle(name, {
   Action = Union({}),
   init = () => Update(),
   propsUpdate = () => Update(),
@@ -192,3 +192,8 @@ export function component(name, {
   });
   return Component;
 };
+
+
+// be friendly to cjs modules
+Object.assign(exports['default'], exports);  // attach all the exports to Spindle
+module.exports = exports['default'];  // export it like a cjs module

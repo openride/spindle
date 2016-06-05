@@ -16,7 +16,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Record } from 'immutable';
 import { Union } from 'results';
-import { component, Update } from 'spindle-ui';
+import Spindle, { Update } from 'spindle-ui';
 
 const Action = Union({
   Increment: null,
@@ -41,7 +41,7 @@ const view = (model, dispatch) => (
   </p>
 );
 
-const Counter = component('Counter',
+const Counter = Spindle('Counter',
   { Action, init, update, view });
 
 
