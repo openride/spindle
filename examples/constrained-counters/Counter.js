@@ -11,7 +11,7 @@ const Model = Record({
 });
 
 
-const Msg = Union({
+const Action = Union({
   Increment: null,
   Decrement: null,
 });
@@ -32,7 +32,7 @@ const propsUpdate = ({ min = -Infinity, max = Infinity }, model) =>
   Update({ model: constrain(model.merge({ min, max })) });
 
 
-const update = (msg, model, _, props) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Increment: () => {
     const newModel = constrain(model.update('value', v => v + 1));
     return Update({
@@ -51,17 +51,17 @@ const update = (msg, model, _, props) => Msg.match(msg, {
 });
 
 
-const view = (model, BoundMsg) => (
+const view = (model, dispatch) => (
   <p>
     <button
       disabled={model.get('value') <= model.get('min')}
-      onClick={BoundMsg.Decrement}>
+      onClick={dispatch.Decrement}>
       -
     </button>
     {model.get('value')}
     <button
       disabled={model.get('value') >= model.get('max')}
-      onClick={BoundMsg.Increment}>
+      onClick={dispatch.Increment}>
       +
     </button>
   </p>
@@ -69,4 +69,4 @@ const view = (model, BoundMsg) => (
 
 
 export default component('Counter',
-  { Msg, init, propsUpdate, update, view });
+  { Action, init, propsUpdate, update, view });

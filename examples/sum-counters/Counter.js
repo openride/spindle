@@ -13,13 +13,13 @@ const init = () =>
   Update({ model: Model() });
 
 
-const Msg = Union({
+const Action = Union({
   Increment: null,
   Decrement: null,
 });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Increment: () => {
     const newModel = model.update('value', v => v + 1);
     return Update({
@@ -48,4 +48,4 @@ const view = (model, dispatch) => (
 
 
 export default component('Counter',
-  { Msg, init, update, view });
+  { Action, init, update, view });

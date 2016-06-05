@@ -10,7 +10,7 @@ const Model = Record({
 });
 
 
-const Msg = Union({
+const Action = Union({
   Roll: null,
   Set: null,
 });
@@ -19,15 +19,15 @@ const Msg = Union({
 const init = () =>
   Update({
     model: Model(),
-    cmds: [ cmd(random, Msg.Set) ],
+    cmds: [ cmd(random, Action.Set) ],
   });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Roll: () =>
     Update({
       model: model.set('value', Maybe.None()),
-      cmds: [ cmd(random, Msg.Set) ],
+      cmds: [ cmd(random, Action.Set) ],
     }),
 
   Set: randomValue => {
@@ -61,4 +61,4 @@ const view = (model, dispatch) => (
 
 
 export default component('Diceroll',
-  { Msg, init, update, view });
+  { Action, init, update, view });

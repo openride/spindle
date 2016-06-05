@@ -18,7 +18,7 @@ import { Record } from 'immutable';
 import { Union } from 'results';
 import { component, Update } from 'spindle-ui';
 
-const Msg = Union({
+const Action = Union({
   Increment: null,
   Decrement: null,
 });
@@ -26,7 +26,7 @@ const Msg = Union({
 const init = () =>
   Update({ model: 0 });
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Increment: () =>
     Update({ model: model + 1 }),
   Decrement: () =>
@@ -42,7 +42,7 @@ const view = (model, dispatch) => (
 );
 
 const Counter = component('Counter',
-  { Msg, init, update, view });
+  { Action, init, update, view });
 
 
 ReactDOM.render(<Counter />, document.getElementById('app'));

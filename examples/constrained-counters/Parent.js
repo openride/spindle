@@ -5,7 +5,7 @@ import { component, Update } from '../../spindle';
 import Counter from './Counter';
 
 
-const Msg = Union({
+const Action = Union({
   SetMin: null,
   SetMax: null,
 });
@@ -21,7 +21,7 @@ const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   SetMin: v =>
     Update({ model: model.set('min', v) }),
 
@@ -51,4 +51,4 @@ const view = (model, dispatch) => (
 
 
 export default component('Parent',
-  { Msg, init, update, view });
+  { Action, init, update, view });

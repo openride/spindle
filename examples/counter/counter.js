@@ -4,7 +4,7 @@ import { Record } from 'immutable';
 import { component, Update } from '../../spindle';
 
 
-const Msg = Union({
+const Action = Union({
   Increment: null,
   Decrement: null,
 });
@@ -19,7 +19,7 @@ const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Increment: () =>
     Update({ model: model.update('value', v => v + 1) }),
 
@@ -38,4 +38,4 @@ const view = (model, dispatch) => (
 
 
 export default component('Counter',
-  { Msg, init, update, view });
+  { Action, init, update, view });

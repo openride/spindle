@@ -90,13 +90,13 @@ const createSpindle = () => {
 };
 
 
-const bindMsgs = (dispatch, Msg) =>
-  Object.keys(Msg.options).forEach(k =>
-    dispatch[k] = payload => dispatch(Msg[k](payload)));
+const bindActions = (dispatch, Action) =>
+  Object.keys(Action.options).forEach(k =>
+    dispatch[k] = payload => dispatch(Action[k](payload)));
 
 
 export function component(name, {
-  Msg = Union({}),
+  Action = Union({}),
   init = () => Update(),
   propsUpdate = () => Update(),
   update = () => Update(),
@@ -114,7 +114,7 @@ export function component(name, {
       this._unregister = null;
       this._cmdQueue = [];
       this._dispatch = msg => this.run(update(msg, this.state.model));
-      bindMsgs(this._dispatch, Msg);
+      bindActions(this._dispatch, Action);
     }
 
     componentDidMount() {

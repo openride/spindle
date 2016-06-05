@@ -5,7 +5,7 @@ import { component, Update } from '../../spindle';
 import Counter from '../counter/counter';
 
 
-const Msg = Union({
+const Action = Union({
   Add: null,
   Remove: null,
 });
@@ -20,7 +20,7 @@ const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   Add: () =>
     Update({ model: model.update('counters', list => list.push(list.size)) }),
 
@@ -44,4 +44,4 @@ const view = (model, dispatch) => (
 
 
 export default component('NCounters',
-  { Msg, init, update, view });
+  { Action, init, update, view });

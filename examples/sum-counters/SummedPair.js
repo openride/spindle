@@ -5,7 +5,7 @@ import { component, Update } from '../../spindle';
 import Counter from './Counter';
 
 
-const Msg = Union({
+const Action = Union({
   TopValue: null,
   BottomValue: null,
 });
@@ -21,7 +21,7 @@ const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) => Msg.match(msg, {
+const update = (action, model) => Action.match(action, {
   TopValue: v =>
     Update({ model: model.set('topValue', v) }),
 
@@ -41,4 +41,4 @@ const view = (model, dispatch) => (
 
 
 export default component('SummedPair',
-  { Msg, init, update, view });
+  { Action, init, update, view });
