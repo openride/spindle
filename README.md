@@ -8,13 +8,12 @@ immediately drop them into any React project, and you can always nest other
 React components inside spindle components. There is no tie-in. And at < 200
 lines of JS, it's almost free to add to your project.
 
-Spindle lets you make components out of a **Model**, **Msg** (for actions), an
-**update** function, and a **view** function. For example, a simple counter:
+Spindle lets you make components out of **Action**s, **init** and **update**
+functions, and a **view** function. For example, a simple counter:
 
 ```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Record } from 'immutable';
 import { Union } from 'results';
 import Spindle, { Update } from 'spindle-ui';
 
