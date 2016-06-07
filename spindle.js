@@ -10,6 +10,14 @@ export const Update = Immutable.Record({
 });
 
 
+const assertType = (checker, value, name) => {
+  const result = checker({ model: value }, 'model', `${name}.update`, 'prop');
+  if (result instanceof Error) {
+    console.error(result);
+  }
+};
+
+
 const propsEq = (a, b) => {
   for (const k in a) {
     if (a[k] !== b[k] && k !== 'onEmit') return false;
@@ -102,6 +110,7 @@ export default function Spindle(name, {
   update = () => Update(),
   view = () => null,
   subscriptions = () => [],
+  modelType = PropTypes.any,
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
@@ -166,7 +175,10 @@ export default function Spindle(name, {
 
     run(update) {
       const { model, cmds, emit } = update.toObject();
-      model && this.setState({ model });
+      if (typeof model !== 'undefined') {
+        assertType(modelType, model, name);
+        this.setState({ model });
+      }
       cmds && (this._cmdQueue = this._cmdQueue.concat(cmds));
       typeof emit !== 'undefined' && this.props.onEmit && this.props.onEmit(emit);
     }

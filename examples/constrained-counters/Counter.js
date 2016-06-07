@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import { recordOf } from 'react-immutable-proptypes';
 import { Record } from 'immutable';
 import { Union, Maybe } from 'results';
 import Spindle, { Update } from '../../spindle';
@@ -8,6 +9,13 @@ const Model = Record({
   value: 0,
   min: -Infinity,
   max: Infinity,
+});
+
+
+const modelType = recordOf({
+  value: PropTypes.number.isRequired,
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
 });
 
 
@@ -69,4 +77,4 @@ const view = (model, dispatch) => (
 
 
 export default Spindle('Counter',
-  { Action, init, propsUpdate, update, view });
+  { Action, init, propsUpdate, update, modelType, view });
