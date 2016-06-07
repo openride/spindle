@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify app.js -t babelify --outfile bundle.js",
     "prepublish": "babel --source-maps inline --out-file spindle.dist.js spindle.js",
+    "watch": "watchify examples/main.js -d -t babelify --outfile bundle.js",
     "watch-counter": "watchify examples/counter/app.js -d -t babelify --outfile bundle.js",
     "watch-pair": "watchify examples/pair-of-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js",
