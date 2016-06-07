@@ -3,11 +3,27 @@ import Immutable from 'immutable';
 import { Union } from 'results';
 
 
-export const Update = Immutable.Record({
-  model: undefined,
-  cmds: undefined,
-  emit: undefined,
-});
+const validUpdateKeys = {
+  model: true,
+  cmds: true,
+  emit: true,
+};
+
+export function Update(stuff) {
+  if (!(this instanceof Update)) {
+    return new Update(stuff);
+  }
+  if (typeof stuff === 'undefined') {
+    return this;
+  }
+  Object.keys(stuff).forEach(k => {
+    if (typeof validUpdateKeys[k] === 'undefined') {
+      throw new TypeError(`Unrecognized key \`${k}\` supplied to Update(). ` +
+        'Valid keys: `model`, `emit`, and `cmds`.');
+    }
+  });
+  Object.assign(this, stuff);
+};
 
 
 const assertType = (checker, value, name) => {
@@ -122,7 +138,7 @@ export default function Spindle(name, {
       this._spindle = undefined;  // only for the root
       this._unregister = null;
       this._cmdQueue = [];
-      this._dispatch = msg => this.run(update(msg, this.state.model));
+      this._dispatch = action => this.run(update(action, this.state.model), 'update', action);
       bindActions(this._dispatch, Action);
     }
 
@@ -134,7 +150,7 @@ export default function Spindle(name, {
         this._isSpindleRoot = false;
       }
       this.getSpindle().register(this);
-      this.run(init(this.props));
+      this.run(init(this.props), 'init');
       this._hasInitialized = true;
       this.forceUpdate();  // grosssssssssss
     }
@@ -145,7 +161,7 @@ export default function Spindle(name, {
 
     componentWillReceiveProps(nextProps) {
       if (!propsEq(this.props, nextProps)) {
-        this.run(propsUpdate(nextProps, this.state.model));
+        this.run(propsUpdate(nextProps, this.state.model), 'propsUpdate');
       }
     }
 
@@ -173,8 +189,15 @@ export default function Spindle(name, {
     }
 
 
-    run(update) {
-      const { model, cmds, emit } = update.toObject();
+    run(update, source, action) {
+      if (!(update instanceof Update)) {
+        if (action && action.name && action.payload) {
+          source = `${source} => ${action.name}(${action.payload || ''})`
+        }
+        throw new TypeError(`${name}'s \`${source}\` function returned \`${typeof update}\`. ` +
+          `Did you forget to wrap a new model in \`Update({ model: ... })\`?`);
+      }
+      const { model, cmds, emit } = update;
       if (typeof model !== 'undefined') {
         assertType(modelType, model, name);
         this.setState({ model });
