@@ -26,8 +26,8 @@ export function Update(stuff) {
 };
 
 
-const assertType = (checker, value, name) => {
-  const result = checker({ model: value }, 'model', `${name}.update`, 'prop');
+const assertType = (who, checker, value, name, source) => {
+  const result = checker({ [who]: value }, who, `${name} => ${source}`, 'prop');
   if (result instanceof Error) {
     console.error(result);
   }
@@ -127,6 +127,7 @@ export default function Spindle(name, {
   view = () => null,
   subscriptions = () => [],
   modelType = PropTypes.any,
+  emitType = PropTypes.any,
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
@@ -188,7 +189,7 @@ export default function Spindle(name, {
       const { model, cmds, emit } = update;
 
       if (typeof model !== 'undefined') {
-        assertType(modelType, model, name);
+        assertType('model', modelType, model, name, source);
         this._model = model;
       }
 
@@ -200,6 +201,7 @@ export default function Spindle(name, {
       this.getSpindle().updateSubs(this, subs);
 
       if (typeof emit !== undefined && this.props.onEmit) {
+        assertType('emit', emitType, emit, name, source);
         this.props.onEmit(emit);
       }
 

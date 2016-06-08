@@ -5,6 +5,9 @@ import { Union, Maybe } from 'results';
 import Spindle, { Update } from '../../spindle';
 
 
+const emitType = PropTypes.number.isRequired;
+
+
 const Model = Record({
   value: 0,
   min: -Infinity,
@@ -82,4 +85,4 @@ const view = (model, dispatch) => (
 
 
 export default Spindle('Counter',
-  { Action, init, propsUpdate, update, modelType, view });
+  { Action, init, propsUpdate, update, modelType, view, emitType });
