@@ -36,8 +36,13 @@ const init = props =>
   propsUpdate(props, Model());
 
 
-const propsUpdate = ({ min = -Infinity, max = Infinity }, model) =>
-  Update({ model: constrain(model.merge({ min, max })) });
+const propsUpdate = ({ min = -Infinity, max = Infinity }, model) => {
+  const updated = constrain(model.merge({ min, max }));
+  return Update({
+    model: updated,
+    emit: model.value,
+  });
+};
 
 
 const update = (action, model) => Action.match(action, {
@@ -45,7 +50,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = constrain(model.update('value', v => v + 1));
     return Update({
       model: newModel,
-      emit: newModel.get('value'),
+      emit: newModel.value,
     });
   },
 
@@ -53,7 +58,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = constrain(model.update('value', v => v - 1));
     return Update({
       model: newModel,
-      emit: newModel.get('value'),
+      emit: newModel.value,
     });
   },
 });
@@ -62,13 +67,13 @@ const update = (action, model) => Action.match(action, {
 const view = (model, dispatch) => (
   <p>
     <button
-      disabled={model.get('value') <= model.get('min')}
+      disabled={model.value <= model.min}
       onClick={dispatch.Decrement}>
       -
     </button>
-    {model.get('value')}
+    {model.value}
     <button
-      disabled={model.get('value') >= model.get('max')}
+      disabled={model.value >= model.max}
       onClick={dispatch.Increment}>
       +
     </button>

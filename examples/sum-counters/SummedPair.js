@@ -35,7 +35,7 @@ const view = (model, dispatch) => (
     <p>here are some counters:</p>
     <Counter onEmit={dispatch.TopValue} />
     <Counter onEmit={dispatch.BottomValue} />
-    <p>their sum is: {model.get('topValue') + model.get('bottomValue')}</p>
+    <p>their sum is: {model.topValue + model.bottomValue}</p>
   </div>
 );
 

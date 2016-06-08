@@ -9,8 +9,10 @@ const Model = Record({
 });
 
 
-const init = () =>
-  Update({ model: Model() });
+const init = () => {
+  const model = Model();
+  return Update({ model, emit: model.value });
+};
 
 
 const Action = Union({

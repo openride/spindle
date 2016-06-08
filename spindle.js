@@ -130,29 +130,27 @@ export default function Spindle(name, {
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = { model: null };
-      this._hasInitialized = false;
-      this._isSpindleRoot = null;
-      this._spindle = undefined;  // only for the root
-      this._unregister = null;
-      this._cmdQueue = [];
-      this._dispatch = action => this.run(update(action, this.state.model), 'update', action);
-      bindActions(this._dispatch, Action);
-    }
+    constructor(props, context) {
+      super(props, context);
 
-    componentDidMount() {
-      if (typeof this.context.spindle === 'undefined') {
+      if (typeof context.spindle === 'undefined') {
         this._isSpindleRoot = true;
         this._spindle = createSpindle();
       } else {
         this._isSpindleRoot = false;
+        this._spindle = undefined;  // only for the root
       }
       this.getSpindle().register(this);
-      this.run(init(this.props), 'init');
-      this._hasInitialized = true;
-      this.forceUpdate();  // grosssssssssss
+
+      this._dispatch = action =>
+        this.queue(update(action, this._model), 'update', action);
+      bindActions(this._dispatch, Action);
+
+      this._model = null;
+    }
+
+    componentWillMount() {
+      this.queue(init(this.props), 'init');
     }
 
     getChildContext() {
@@ -161,23 +159,13 @@ export default function Spindle(name, {
 
     componentWillReceiveProps(nextProps) {
       if (!propsEq(this.props, nextProps)) {
-        this.run(propsUpdate(nextProps, this.state.model), 'propsUpdate');
+        this.queue(propsUpdate(nextProps, this._model), 'propsUpdate');
       }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
       return !propsEq(nextProps, this.props) ||
              !Immutable.is(nextState.model, this.state.model);
-    }
-
-    componentWillUpdate(_, nextState) {
-      const subs = subscriptions(this.state.model);
-      this.getSpindle().updateSubs(this, subs);
-    }
-
-    componentDidUpdate() {
-      this.getSpindle().pushCmds(this, this._cmdQueue);
-      this._cmdQueue = [];
     }
 
     componentWillUnmount() {
@@ -188,8 +176,7 @@ export default function Spindle(name, {
       return this.context.spindle || this._spindle;
     }
 
-
-    run(update, source, action) {
+    queue(update, source, action) {
       if (!(update instanceof Update)) {
         if (action && action.name && action.payload) {
           source = `${source} => ${action.name}(${action.payload || ''})`
@@ -197,21 +184,37 @@ export default function Spindle(name, {
         throw new TypeError(`${name}'s \`${source}\` function returned \`${typeof update}\`. ` +
           `Did you forget to wrap a new model in \`Update({ model: ... })\`?`);
       }
+
       const { model, cmds, emit } = update;
+
       if (typeof model !== 'undefined') {
         assertType(modelType, model, name);
-        this.setState({ model });
+        this._model = model;
       }
-      cmds && (this._cmdQueue = this._cmdQueue.concat(cmds));
-      typeof emit !== 'undefined' && this.props.onEmit && this.props.onEmit(emit);
+
+      if (typeof cmds !== 'undefined') {
+        this.getSpindle().pushCmds(this, cmds);
+      }
+
+      const subs = subscriptions(this._model);
+      this.getSpindle().updateSubs(this, subs);
+
+      if (typeof emit !== undefined && this.props.onEmit) {
+        this.props.onEmit(emit);
+      }
+
+      if (source === 'init') {
+        this.state = { model: this._model };
+      } else {
+        this.setState({ model: this._model });
+      }
     }
 
     render() {
-      return this._hasInitialized
-        ? view(this.state.model, this._dispatch, this.props)
-        : null;  // can't mount children until we can set up context
+      return view(this._model, this._dispatch, this.props);
     }
   }
+
   Object.assign(Component, {
     displayName: name,
     contextTypes: {

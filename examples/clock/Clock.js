@@ -10,16 +10,23 @@ const Model = Record({
 });
 
 
+const Action = Union({
+  Time: null,
+});
+
+
 const init = () =>
   Update({ model: Model() });
 
 
-const update = (msg, model) =>
-  Update({ model: model.set('time', Maybe.Some(msg)) });
+const update = (action, model) => Action.match(action, {
+  Time: t =>
+    Update({ model: model.set('time', Maybe.Some(t)) }),
+});
 
 
 const subscriptions = model =>
-  [ sub(seconds, x => x) ]
+  [ sub(seconds, Action.Time) ]
 
 
 const view = model => Maybe.match(model.get('time'), {
