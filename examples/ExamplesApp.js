@@ -12,6 +12,7 @@ import ConstrainedCounters from './constrained-counters/Parent';
 import Wrapper from './wrapper/Page';
 import Diceroll from './diceroll/Diceroll';
 import Clock from './clock/Clock';
+import TodoMVC from './todomvc/TodoMVC';
 
 
 const exampleComponents = [
@@ -23,6 +24,7 @@ const exampleComponents = [
   Wrapper,
   Diceroll,
   Clock,
+  TodoMVC,
 ];
 
 

@@ -213,7 +213,7 @@ export default function Spindle(name, {
       const subs = subscriptions(this._model);
       this.getSpindle().updateSubs(this, subs);
 
-      if (typeof emit !== undefined && this.props.onEmit) {
+      if (typeof emit !== 'undefined' && this.props.onEmit) {
         assertType('emit', emitType, emit, name, source);
         this.props.onEmit(emit);
       }
