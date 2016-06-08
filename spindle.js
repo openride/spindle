@@ -67,6 +67,19 @@ export function sub(s, Tag) {
 }
 
 
+export const TypedUnion = options => {
+  const U = Union(options);
+  Object.keys(options).forEach(o => {
+    const C = U[o];
+    U[o] = x => {
+      assertType('payload', options[o], x, `TypedUnion{${Object.keys(options).join(',')}}`, o);
+      return C(x);
+    };
+  });
+  return U;
+}
+
+
 const ComponentEffects = Immutable.Record({
   subs: Immutable.Set(),
   cmds: Immutable.List(),

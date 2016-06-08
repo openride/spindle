@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Record } from 'immutable';
-import { Union, Maybe } from 'results';
-import Spindle, { Update, cmd } from '../../spindle';
+import { Maybe } from 'results';
+import Spindle, { Update, TypedUnion, cmd } from '../../spindle';
 import { random } from '../../random';
 
 
@@ -10,9 +10,9 @@ const Model = Record({
 });
 
 
-const Action = Union({
-  Roll: null,
-  Set: null,
+const Action = TypedUnion({
+  Roll: PropTypes.any,
+  Set: PropTypes.number.isRequired,
 });
 
 
