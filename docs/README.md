@@ -1,22 +1,15 @@
-# [Spindle](https://uniphil.gitbooks.io/spindle/content/)
+# Spindle
 
 Spindle is a tiny helper for structuring React components in a way that's easy
 to create, maintain, reuse, and scale. And it's _really fast_, for free!
 
 **Spindle creates just plain-old regular React components**, so you can
 immediately drop them into any React project, and you can always nest other
-React components inside spindle components. There is no tie-in. And at about 200
+React components inside spindle components. There is no tie-in. And at < 200
 lines of JS, it's almost free to add to your project.
 
-```bash
-$ npm install spindle-ui immutable results
-```
-
-**[Docs](https://uniphil.gitbooks.io/spindle/content/)**
-
-Spindle lets you specify components with a few pure functions that fit together
-well. For example, a counter built out of **Action**, **init**, **update**, and
-**view**:
+Spindle lets you make components out of **Action**s, **init** and **update**
+functions, and a **view** function. For example, a simple counter:
 
 ```jsx
 import React from 'react';
@@ -54,8 +47,18 @@ const Counter = Spindle('Counter',
 ReactDOM.render(<Counter />, document.getElementById('app'));
 ```
 
-Compose your application by just nesting other components in your views. A
-cheeky example: here is how to write a pair of the above counters:
+Simpler components might only need a **view**, while more sophisticated
+components can use **propsUpdate** and **onEmit** to pass data between parents
+and children, and **commands** and **subscriptions** to get domain data and
+side-effects in and out. With that, I've already name-dropped everything in
+spindle's component API!
+
+Spindle takes inspiration from the amazing [elm](http://elm-lang.org/) language
+and architecture, but leverages React to do the bookkeeping. This makes it
+incredibly easy to nest components and add features without touching any parent
+components.
+
+A cheeky example: here is how to write a pair of the above counters
 
 ```jsx
 const pairView = () => (
@@ -70,16 +73,7 @@ const Pair = component('Pair', { view: pairView });
 ReactDOM.render(<Pair />, document.getElementById('app'));
 ```
 
-Spindle takes inspiration from the amazing [elm](http://elm-lang.org/) language
-and architecture, but leverages React to do the bookkeeping. This makes it
-incredibly easy to nest components and add features without friction.
-
-React `propTypes` can be specified on Spindle components. In fact, Spindle takes
-this concept a step further and lets you specify `modelType`, `emitType`, and
-even `TypedAction`s!
-
-To see how to solve lots of different UI challenges with Spindle, check out the
-[examples/](examples/) folder in this repository:
+Proper docs coming soon! In the mean time, check out [examples/](examples/)
 
 - [List of counters](examples/n-counters) for managing **dynamic children**
 - [Sum of counters](examples/sum-counters) for passing **data to parents**
@@ -90,8 +84,3 @@ To see how to solve lots of different UI challenges with Spindle, check out the
 - [Clock](examples/clock) **subscribes** to `seconds` to show the current time
 - [Dice roll](examples/diceroll) uses a **command** to ask for a random number
   (which is a side-effect)
-
-Spindle aims to be extremely developer-friendly. A confusing error message is a
-bug, so if you see one, please [open an issue](issues/new)!
-
-### [The Spindle guide](https://uniphil.gitbooks.io/spindle/content/)
