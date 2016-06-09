@@ -18,7 +18,7 @@ Spindle lets you specify components with a few pure functions that fit together
 well. For example, a counter built out of **Action**, **init**, **update**, and
 **view**:
 
-```jsx
+```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Union } from 'results';
@@ -57,7 +57,7 @@ ReactDOM.render(<Counter />, document.getElementById('app'));
 Compose your application by just nesting other components in your views. A
 cheeky example: here is how to write a pair of the above counters:
 
-```jsx
+```js
 const pairView = () => (
   <div>
     <Counter />
