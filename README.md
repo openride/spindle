@@ -92,6 +92,9 @@ To see how to solve lots of different UI challenges with Spindle, check out the
   (which is a side-effect)
 
 Spindle aims to be extremely developer-friendly. A confusing error message is a
-bug, so if you see one, please [open an issue](issues/new)!
+bug, so if you find one, please
+[open an issue](https://github.com/openride/spindle/issues/new)!
 
-### [The Spindle guide](https://uniphil.gitbooks.io/spindle/content/)
+### What next?
+
+Check out [the Spindle guide](https://uniphil.gitbooks.io/spindle/content/)
