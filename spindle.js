@@ -106,8 +106,9 @@ const createSpindle = () => {
     updateSubs: (component, subs) => {
       subs.forEach(([ s, Tag ]) => {
         const k = s.get('key');
+        let go;
         if (!subscriptions.has(k)) {
-          const go = (state, msg) => {
+          go = (state, msg) => {
             subscriptions
               .getIn([k, 'subscribers'])
               .forEach(suber => suber(msg));
@@ -115,12 +116,15 @@ const createSpindle = () => {
           };
           subscriptions = subscriptions.set(k, Immutable.Map({
             msg: go,
-            state: s.start(go),
+            state: null,
             subscribers: Immutable.Map(),
           }));
         }
         subscriptions = subscriptions.setIn([k, 'subscribers', Tag],
           payload => component._dispatch(Tag(payload)));
+        if (go) {
+          subscriptions = subscriptions.setIn([k, 'state'], s.start(go));
+        }
       });
     },
   };

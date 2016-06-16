@@ -5,6 +5,7 @@ export const seconds = Sub({
   key: Symbol('SECONDS'),
   start: msg => {
     let state = setInterval(t => msg(state, new Date()), 1000)
+    msg(state, new Date());
     return state;
   },
   stop: clearInterval,

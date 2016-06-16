@@ -1,6 +1,6 @@
 {
   "name": "spindle-ui",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A tiny helper for structuring React components in a way that's easy to create, maintain, reuse, and scale",
   "main": "spindle.dist.js",
   "scripts": {
