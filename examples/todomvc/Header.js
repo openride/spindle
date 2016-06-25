@@ -21,7 +21,7 @@ const update = (action, model) => Action.match(action, {
   KeyDown: e => {
     const task = e.target.value.trim();
     if (e.keyCode === 13 && task !== '') {
-      return Update({ cb: { onAdd: [task] }, model: '' });
+      return Update({ cb: { onAdd: task }, model: '' });
     } else {
       return Update();
     }

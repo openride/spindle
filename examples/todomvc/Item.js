@@ -32,13 +32,13 @@ const propsUpdate = ({ task }, model) =>
 
 const update = (action, model) => Action.match(action, {
   Destroy: () =>
-    Update({ cb: { onDestroy: [model.task.id] } }),
+    Update({ cb: { onDestroy: model.task.id } }),
 
   FinishEditing: () => {
     const task = model.task.set('title', model.editingValue);
     return Update({
       model: model.merge({ task, editing: false }),
-      cb: { onSave: [task] },
+      cb: { onSave: task },
     });
   },
 
@@ -47,7 +47,7 @@ const update = (action, model) => Action.match(action, {
       const task = model.task.set('title', model.editingValue);
       return Update({
         model: model.merge({ task, editing: false }),
-        cb: { onSave: [task] },
+        cb: { onSave: task },
       });
     } else {
       return Update();
@@ -67,7 +67,7 @@ const update = (action, model) => Action.match(action, {
     const task = model.task.update('completed', c => !c);
     return Update({
       model: model.set('task', task),
-      cb: { onSave: [task] },
+      cb: { onSave: task },
     });
   },
 });

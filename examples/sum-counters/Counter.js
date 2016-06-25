@@ -11,7 +11,7 @@ const Model = Record({
 
 const init = () => {
   const model = Model();
-  return Update({ model, cb: { onChange: [model.value] } });
+  return Update({ model, cb: { onChange: model.value } });
 };
 
 
@@ -26,7 +26,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = model.update('value', v => v + 1);
     return Update({
       model: newModel,
-      cb: { onChange: [newModel.get('value')] },
+      cb: { onChange: newModel.get('value') },
     });
   },
 
@@ -34,7 +34,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = model.update('value', v => v - 1);
     return Update({
       model: newModel,
-      cb: { onChange: [newModel.get('value')] },
+      cb: { onChange: newModel.get('value') },
     });
   },
 });

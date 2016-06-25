@@ -75,7 +75,7 @@ and architecture, but leverages React to do the bookkeeping. This makes it
 incredibly easy to nest components and add features without friction.
 
 React `propTypes` can be specified on Spindle components. In fact, Spindle takes
-this concept a step further and lets you specify `modelType`, `emitType`, and
+this concept a step further and lets you specify `modelType`, `cbTypes`, and
 even `TypedAction`s!
 
 To see how to solve lots of different UI challenges with Spindle, check out the

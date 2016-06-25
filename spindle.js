@@ -142,6 +142,7 @@ export default function Spindle(name, {
   view = () => null,
   subscriptions = () => [],
   modelType = PropTypes.any,
+  cbTypes = {},
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
@@ -218,8 +219,12 @@ export default function Spindle(name, {
         Object.keys(cb)
           .filter(prop =>
             this.props[prop])
-          .forEach(prop =>
-            this.props[prop].apply(null, cb[prop]));
+          .forEach(prop => {
+            if (cbTypes.hasOwnProperty(prop)) {
+              assertType(`cb: { ${prop} }`, cbTypes[prop], cb[prop], name, source);
+            }
+            this.props[prop](cb[prop]);
+          });
       }
 
       if (source === 'init') {

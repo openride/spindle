@@ -19,6 +19,11 @@ const modelType = recordOf({
 });
 
 
+const cbTypes = {
+  onChange: PropTypes.number.isRequired,
+};
+
+
 const Action = Union({
   Increment: null,
   Decrement: null,
@@ -40,7 +45,7 @@ const propsUpdate = ({ min = -Infinity, max = Infinity }, model) => {
   const updated = constrain(model.merge({ min, max }));
   return Update({
     model: updated,
-    cb: { onChange: [model.value] },
+    cb: { onChange: model.value },
   });
 };
 
@@ -50,7 +55,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = constrain(model.update('value', v => v + 1));
     return Update({
       model: newModel,
-      cb: { onChange: [newModel.value] },
+      cb: { onChange: newModel.value },
     });
   },
 
@@ -58,7 +63,7 @@ const update = (action, model) => Action.match(action, {
     const newModel = constrain(model.update('value', v => v - 1));
     return Update({
       model: newModel,
-      cb: { onChange: [newModel.value] },
+      cb: { onChange: newModel.value },
     });
   },
 });
@@ -82,4 +87,4 @@ const view = (model, dispatch) => (
 
 
 export default Spindle('Counter',
-  { Action, init, propsUpdate, update, modelType, view });
+  { Action, init, propsUpdate, update, modelType, view, cbTypes });
