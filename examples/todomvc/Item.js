@@ -22,12 +22,6 @@ const Action = Union({
 });
 
 
-export const Emit = Union({
-  Destroy: null,
-  Save: null,
-});
-
-
 const init = ({ task }) =>
   Update({ model: Model({ task }) });
 
@@ -38,13 +32,13 @@ const propsUpdate = ({ task }, model) =>
 
 const update = (action, model) => Action.match(action, {
   Destroy: () =>
-    Update({ emit: Emit.Destroy(model.task.id) }),
+    Update({ cb: { onDestroy: [model.task.id] } }),
 
   FinishEditing: () => {
     const task = model.task.set('title', model.editingValue);
     return Update({
       model: model.merge({ task, editing: false }),
-      emit: Emit.Save(task),
+      cb: { onSave: [task] },
     });
   },
 
@@ -53,7 +47,7 @@ const update = (action, model) => Action.match(action, {
       const task = model.task.set('title', model.editingValue);
       return Update({
         model: model.merge({ task, editing: false }),
-        emit: Emit.Save(task),
+        cb: { onSave: [task] },
       });
     } else {
       return Update();
@@ -73,7 +67,7 @@ const update = (action, model) => Action.match(action, {
     const task = model.task.update('completed', c => !c);
     return Update({
       model: model.set('task', task),
-      emit: Emit.Save(task),
+      cb: { onSave: [task] },
     });
   },
 });

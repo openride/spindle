@@ -3,7 +3,7 @@ import Spindle, { Update } from '../../spindle';
 import Immutable, { Record } from 'immutable';
 import { Union } from 'results';
 import Header from './Header';
-import Item, { Emit as ItemEmit } from './Item';
+import Item from './Item';
 
 
 const Task = Record({
@@ -15,7 +15,8 @@ const Task = Record({
 
 const Action = Union({
   Add: null,
-  Change: null,
+  Save: null,
+  Destroy: null,
   ClearCompleted: null,
   MarkAllComplete: null,
 });
@@ -32,12 +33,11 @@ const update = (action, model) => Action.match(action, {
     return Update({ model: model.set(nextId, task) });
   },
 
-  Change: msg => ItemEmit.match(msg, {
-    Destroy: id =>
-      Update({ model: model.delete(id) }),
-    Save: task =>
-      Update({ model: model.set(task.get('id'), task) }),
-  }),
+  Destroy: id =>
+    Update({ model: model.delete(id) }),
+
+  Save: task =>
+    Update({ model: model.set(task.get('id'), task) }),
 
   ClearCompleted: () =>
     Update({ model: model.filter(task => !task.completed) }),
@@ -51,7 +51,7 @@ const view = (model, dispatch) => {
   const incomplete = model.filter(task => !task.completed);
   return (
     <section className="todoapp">
-      <Header onEmit={dispatch.Add} />
+      <Header onAdd={dispatch.Add} />
       {model.size > 0 && [
         <section key="main" className="main">
           <input
@@ -65,7 +65,8 @@ const view = (model, dispatch) => {
             {model.map(task => (
               <Item
                 key={task.id}
-                onEmit={dispatch.Change}
+                onSave={dispatch.Save}
+                onDestroy={dispatch.Destroy}
                 task={task} />
             )).toArray()}
           </ul>

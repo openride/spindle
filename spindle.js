@@ -6,7 +6,7 @@ import { Union } from 'results';
 const validUpdateKeys = {
   model: true,
   cmds: true,
-  emit: true,
+  cb: true,
 };
 
 export function Update(stuff) {
@@ -19,7 +19,7 @@ export function Update(stuff) {
   Object.keys(stuff).forEach(k => {
     if (typeof validUpdateKeys[k] === 'undefined') {
       throw new TypeError(`Unrecognized key \`${k}\` supplied to Update(). ` +
-        'Valid keys: `model`, `emit`, and `cmds`.');
+        `Valid keys: ${Object.keys(validUpdateKeys).join(', ')}`);
     }
   });
   Object.assign(this, stuff);
@@ -36,11 +36,9 @@ const assertType = (who, checker, value, name, source) => {
 
 const propsEq = (a, b) => {
   for (const k in a) {
-    if (a[k] !== b[k] && k !== 'onEmit') return false;
+    if (a[k] !== b[k]) return false;
   }
-  const aCount = Object.keys(a).length - !!a.onEmit;
-  const bCount = Object.keys(b).length - !!b.onEmit;
-  return aCount === bCount;
+  return Object.keys(a).length === Object.keys(b).length;
 };
 
 
@@ -144,7 +142,6 @@ export default function Spindle(name, {
   view = () => null,
   subscriptions = () => [],
   modelType = PropTypes.any,
-  emitType = PropTypes.any,
   propTypes: componentPropTypes = {},
 }) {
   class Component extends React.Component {
@@ -203,7 +200,7 @@ export default function Spindle(name, {
           `Did you forget to wrap a new model in \`Update({ model: ... })\`?`);
       }
 
-      const { model, cmds, emit } = update;
+      const { model, cmds, cb } = update;
 
       if (typeof model !== 'undefined') {
         assertType('model', modelType, model, name, source);
@@ -217,9 +214,12 @@ export default function Spindle(name, {
       const subs = subscriptions(this._model);
       this.getSpindle().updateSubs(this, subs);
 
-      if (typeof emit !== 'undefined' && this.props.onEmit) {
-        assertType('emit', emitType, emit, name, source);
-        this.props.onEmit(emit);
+      if (typeof cb !== 'undefined') {
+        Object.keys(cb)
+          .filter(prop =>
+            this.props[prop])
+          .forEach(prop =>
+            this.props[prop].apply(null, cb[prop]));
       }
 
       if (source === 'init') {
@@ -242,10 +242,7 @@ export default function Spindle(name, {
     childContextTypes: {
       spindle: PropTypes.object,
     },
-    propTypes: {
-      ...componentPropTypes,
-      onEmit: PropTypes.func,  // optional
-    }
+    propTypes: componentPropTypes,
   });
   return Component;
 };

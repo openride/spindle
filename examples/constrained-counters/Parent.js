@@ -34,7 +34,7 @@ const view = (model, dispatch) => (
   <div>
     <p>min</p>
     <Counter
-      onEmit={dispatch.SetMin}
+      onChange={dispatch.SetMin}
       max={model.get('max')} />
 
     <p>val</p>
@@ -44,7 +44,7 @@ const view = (model, dispatch) => (
 
     <p>max</p>
     <Counter
-      onEmit={dispatch.SetMax}
+      onChange={dispatch.SetMax}
       min={model.get('min')} />
   </div>
 );

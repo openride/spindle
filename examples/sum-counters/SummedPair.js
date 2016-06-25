@@ -33,8 +33,8 @@ const update = (action, model) => Action.match(action, {
 const view = (model, dispatch) => (
   <div>
     <p>here are some counters:</p>
-    <Counter onEmit={dispatch.TopValue} />
-    <Counter onEmit={dispatch.BottomValue} />
+    <Counter onChange={dispatch.TopValue} />
+    <Counter onChange={dispatch.BottomValue} />
     <p>their sum is: {model.topValue + model.bottomValue}</p>
   </div>
 );
