@@ -48,21 +48,15 @@ export const Cmd = Immutable.Record({
 });
 
 
-export const Sub = Immutable.Record({
-  key: null,
-  start: null,
-  stop: null,
-});
-
-
-export function cmd(c, Tag) {
-  return [ c, Tag ];
-}
-
-
-export function sub(s, Tag) {
-    return [ s, Tag ];
-}
+export const Sub = (ns, options) => {
+  // assertType('ns', symbolType, ns, 'Sub', 'setup');
+  assertType('options', PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    start: PropTypes.func.isRequired,
+    stop: PropTypes.func.isRequired,
+  }), options, 'Sub', 'setup');
+  return { ns, ...options };
+};
 
 
 export const TypedUnion = options => {
@@ -75,55 +69,66 @@ export const TypedUnion = options => {
     };
   });
   return U;
-}
-
-
-const ComponentEffects = Immutable.Record({
-  subs: Immutable.Set(),
-  cmds: Immutable.List(),
-});
+};
 
 
 const createSpindle = () => {
-  let components = Immutable.Map();
-  let subscriptions = Immutable.Map();
+  const components = new Map();
+
+  const subscriptions = new Map();  // ns => Map(key => sub)
 
   return {
     register: component =>
-      components = components.set(component, ComponentEffects()),
-    unregister: component => {
-      // abort cmds
-      // cancel subs
-      components = components.delete(component);
-    },
+      components.set(component, { subs: [] }),
+    unregister: component =>
+      components.delete(component),
     pushCmds: (component, cmds) => {
       cmds.forEach(([ c, Tag ]) => {
-        c.get('run')(payload => component._dispatch(Tag(payload)));
+        c.get('run')(
+          payload => component._dispatch(Tag(payload)),
+          () => null);  // done
       });
     },
     updateSubs: (component, subs) => {
-      subs.forEach(([ s, Tag ]) => {
-        const k = s.get('key');
-        let go;
-        if (!subscriptions.has(k)) {
-          go = (state, msg) => {
-            subscriptions
-              .getIn([k, 'subscribers'])
-              .forEach(suber => suber(msg));
-            subscriptions = subscriptions.setIn([k, 'state'], state);
-          };
-          subscriptions = subscriptions.set(k, Immutable.Map({
-            msg: go,
-            state: null,
-            subscribers: Immutable.Map(),
-          }));
+      // ensure all subs are set up and started
+      subs.forEach(([{ ns, key, start, stop }, Tag]) => {
+        if (!subscriptions.has(ns)) {
+          subscriptions.set(ns, new Map());
         }
-        subscriptions = subscriptions.setIn([k, 'subscribers', Tag],
-          payload => component._dispatch(Tag(payload)));
-        if (go) {
-          subscriptions = subscriptions.setIn([k, 'state'], s.start(go));
+        const nsSubs = subscriptions.get(ns);
+        if (!nsSubs.has(key)) {
+          const sub = { stop, state: null };
+          sub.state = start((next, payload) => {
+            sub.state = next;
+            components.forEach(({ subs: subs_ }, c) =>
+              subs_
+                .filter(([n, k]) =>
+                  n === ns && k === key)
+                .forEach(([_, __, T]) =>
+                  c._dispatch(T(payload))));
+          });
+          nsSubs.set(key, sub);
         }
+
       });
+
+      // update the component's subscriptions
+      components.get(component).subs = subs
+        .map(([{ ns, key }, Tag]) =>
+          [ns, key, Tag]);
+
+      // super-wastefully turn off all unused subs
+      subscriptions.forEach((nsSubs, ns) =>
+        nsSubs.forEach((sub, key) => {
+          for (const [c, { subs }] of components) {
+            if (subs.some(([n, k]) =>
+                n === ns && k === key)) {
+              return;
+            }
+          }
+          sub.stop(sub.state);
+          nsSubs.delete(key);
+        }));
     },
   };
 };

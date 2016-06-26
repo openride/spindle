@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Record } from 'immutable';
 import { Maybe } from 'results';
-import Spindle, { Update, TypedUnion, cmd } from '../../spindle';
-import { random } from '../../random';
+import Spindle, { Update, TypedUnion } from '../../spindle';
+import { random } from '../../effects/random';
 
 
 const Model = Record({
@@ -19,7 +19,7 @@ const Action = TypedUnion({
 const init = () =>
   Update({
     model: Model(),
-    cmds: [ cmd(random, Action.Set) ],
+    cmds: [ [random, Action.Set] ],
   });
 
 
@@ -27,7 +27,7 @@ const update = (action, model) => Action.match(action, {
   Roll: () =>
     Update({
       model: model.set('value', Maybe.None()),
-      cmds: [ cmd(random, Action.Set) ],
+      cmds: [ [random, Action.Set] ],
     }),
 
   Set: randomValue => {

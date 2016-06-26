@@ -1,8 +1,8 @@
 import React from 'react';
 import { Record } from 'immutable';
 import { Union, Maybe } from 'results';
-import Spindle, { Update, sub } from '../../spindle';
-import { seconds } from '../../time';
+import Spindle, { Update } from '../../spindle';
+import { now, every } from '../../effects/time';
 
 
 const Model = Record({
@@ -16,7 +16,10 @@ const Action = Union({
 
 
 const init = () =>
-  Update({ model: Model() });
+  Update({
+    model: Model(),
+    cmds: [ [now, Action.Time] ],
+  });
 
 
 const update = (action, model) => Action.match(action, {
@@ -26,7 +29,7 @@ const update = (action, model) => Action.match(action, {
 
 
 const subscriptions = model =>
-  [ sub(seconds, Action.Time) ]
+  [ [every(1000), Action.Time] ]
 
 
 const view = model => Maybe.match(model.get('time'), {
