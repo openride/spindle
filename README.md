@@ -9,7 +9,7 @@ React components inside spindle components. There is no tie-in. And at about 200
 lines of JS, it's almost free to add to your project.
 
 ```bash
-$ npm install spindle-ui immutable results
+$ npm install spindle-ui results
 ```
 
 **[Docs](https://uniphil.gitbooks.io/spindle/content/)**

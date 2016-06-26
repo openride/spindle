@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import Immutable from 'immutable';
 import { Union } from 'results';
+import is from './lib/is';
 
 
 const validUpdateKeys = {
@@ -196,7 +196,7 @@ export default function Spindle(name, {
 
     shouldComponentUpdate(nextProps, nextState) {
       return !propsEq(nextProps, this.props) ||
-             !Immutable.is(nextState.model, this.state.model);
+             !is(nextState.model, this.state.model);
     }
 
     componentWillUnmount() {
