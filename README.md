@@ -78,6 +78,10 @@ React `propTypes` can be specified on Spindle components. In fact, Spindle takes
 this concept a step further and lets you specify `modelType`, `cbTypes`, and
 even `TypedAction`s!
 
+[immutablejs](http://facebook.github.io/immutable-js/) collections are supported
+(but completely optional!) for your component's `model`, providing a great
+option for keeping everything correct _and_ fast.
+
 To see how to solve lots of different UI challenges with Spindle, check out the
 [examples/](examples/) folder in this repository:
 
@@ -90,6 +94,9 @@ To see how to solve lots of different UI challenges with Spindle, check out the
 - [Clock](examples/clock) **subscribes** to `seconds` to show the current time
 - [Dice roll](examples/diceroll) uses a **command** to ask for a random number
   (which is a side-effect)
+- [Draggable](examples/draggable) uses dynamic **subscriptions** for mouse
+  events.
+- [RepoInfo](examples/Repo-info) fetches data over HTTP with a **command**
 
 Spindle aims to be extremely developer-friendly. A confusing error message is a
 bug, so if you find one, please
