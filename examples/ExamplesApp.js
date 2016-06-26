@@ -11,6 +11,7 @@ import SummedPair from './sum-counters/SummedPair';
 import ConstrainedCounters from './constrained-counters/Parent';
 import Wrapper from './wrapper/Page';
 import Diceroll from './diceroll/Diceroll';
+import RepoInfo from './repo-info/RepoInfo';
 import Clock from './clock/Clock';
 import Draggable from './draggable/Draggable';
 import TodoMVC from './todomvc/TodoMVC';
@@ -24,6 +25,7 @@ const exampleComponents = [
   ConstrainedCounters,
   Wrapper,
   Diceroll,
+  RepoInfo,
   Clock,
   Draggable,
   TodoMVC,

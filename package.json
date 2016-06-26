@@ -16,7 +16,8 @@
     "watch-wrap": "watchify examples/wrapper/app.js -d -t babelify --outfile bundle.js",
     "watch-clock": "watchify examples/clock/app.js -d -t babelify --outfile bundle.js",
     "watch-draggable": "watchify examples/draggable/app.js -d -t babelify --outfile bundle.js",
-    "watch-diceroll": "watchify examples/diceroll/app.js -d -t babelify --outfile bundle.js"
+    "watch-diceroll": "watchify examples/diceroll/app.js -d -t babelify --outfile bundle.js",
+    "watch-repo": "watchify examples/repo-info/app.js -d -t babelify --outfile bundle.js"
   },
   "author": "uniphil",
   "license": "GPL",
