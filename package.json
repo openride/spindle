@@ -15,6 +15,7 @@
     "watch-constrained": "watchify examples/constrained-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-wrap": "watchify examples/wrapper/app.js -d -t babelify --outfile bundle.js",
     "watch-clock": "watchify examples/clock/app.js -d -t babelify --outfile bundle.js",
+    "watch-draggable": "watchify examples/draggable/app.js -d -t babelify --outfile bundle.js",
     "watch-diceroll": "watchify examples/diceroll/app.js -d -t babelify --outfile bundle.js"
   },
   "author": "uniphil",
