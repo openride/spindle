@@ -6,6 +6,8 @@ const ns = Symbol('TIME');
 export const now = Cmd({
   run: (msg, done) =>
     done(msg(new Date())),
+  abort: () =>
+    null,
 });
 
 

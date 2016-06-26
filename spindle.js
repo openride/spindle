@@ -42,10 +42,13 @@ const propsEq = (a, b) => {
 };
 
 
-export const Cmd = Immutable.Record({
-  run: null,
-  abort: null,
-});
+export const Cmd = options => {
+  assertType('options', PropTypes.shape({
+    run: PropTypes.func.isRequired,
+    abort: PropTypes.func.isRequired,
+  }), options, 'Cmd', 'setup');
+  return options;
+};
 
 
 export const Sub = (ns, options) => {
@@ -74,19 +77,26 @@ export const TypedUnion = options => {
 
 const createSpindle = () => {
   const components = new Map();
-
   const subscriptions = new Map();  // ns => Map(key => sub)
 
   return {
     register: component =>
-      components.set(component, { subs: [] }),
-    unregister: component =>
-      components.delete(component),
+      components.set(component, { subs: [], cmds: [] }),
+    unregister: component => {
+      components.get(component).cmds.forEach(cmd =>
+        cmd.abort(cmd.state));
+      components.delete(component);
+    },
     pushCmds: (component, cmds) => {
-      cmds.forEach(([ c, Tag ]) => {
-        c.get('run')(
-          payload => component._dispatch(Tag(payload)),
-          () => null);  // done
+      cmds.forEach(([{ run, abort }, Tag ]) => {
+        const ccmds = components.get(component).cmds;
+        const cmd = { state: null, abort };
+        ccmds.push(cmd);
+        const finish = () =>
+          ccmds.splice(ccmds.indexOf(cmd), 1);
+        const msg = payload =>
+          component._dispatch(Tag(payload));
+        cmd.state = run(msg, finish);
       });
     },
     updateSubs: (component, subs) => {
