@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify app.js -t babelify --outfile bundle.js",
     "prepublish": "babel --source-maps inline --out-file spindle.dist.js spindle.js",
-    "watch": "watchify examples/main.js -d -t babelify --outfile bundle.js",
+    "watch": "watchify examples/main.js -v -d -t babelify --outfile bundle.js",
     "watch-counter": "watchify examples/counter/app.js -d -t babelify --outfile bundle.js",
     "watch-pair": "watchify examples/pair-of-counters/app.js -d -t babelify --outfile bundle.js",
     "watch-n": "watchify examples/n-counters/app.js -d -t babelify --outfile bundle.js",
@@ -22,7 +22,7 @@
   "author": "uniphil",
   "license": "GPL",
   "peerDependencies": {
-    "react": "^15.1.0",
+    "react": "^15.3.1",
     "results": "^0.14.0"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "browserify": "^13.0.1",
     "immutable": "^3.8.1",
     "react-dom": "^15.1.0",
-    "react-immutable-proptypes": "^1.7.1",
+    "react-immutable-proptypes": "^2.1.0",
     "watchify": "^3.7.0"
   },
   "dependencies": {}

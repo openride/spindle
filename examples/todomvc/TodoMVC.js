@@ -72,7 +72,7 @@ const view = (model, dispatch) => {
           </ul>
         </section>,
         <footer key="footer" className="footer">
-          <span class="todo-count">
+          <span className="todo-count">
             <strong>{incomplete.size}</strong> item{incomplete.size === 1 ? '' : 's'} left
           </span>
 

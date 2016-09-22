@@ -3,11 +3,16 @@ import { Union } from 'results';
 import is from './lib/is';
 
 
+const I_PROMISE_I_WILL_ONLY_CALL_THESE_PROPTYPES_CHECKERS_IN_DEV_MODE =
+  'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
+
 const validUpdateKeys = {
   model: true,
   cmds: true,
   cb: true,
 };
+
 
 export function Update(stuff) {
   if (!(this instanceof Update)) {
@@ -26,12 +31,15 @@ export function Update(stuff) {
 };
 
 
-const assertType = (who, checker, value, name, source) => {
-  const result = checker({ [who]: value }, who, `${name} => ${source}`, 'prop');
-  if (result instanceof Error) {
-    console.error(result);
-  }
-};
+const assertType = process.env.NODE_ENV === 'production'
+  ? () => null
+  : (who, checker, value, name, source) => {
+      const result = checker({ [who]: value }, who, `${name} => ${source}`, 'prop', who,
+        I_PROMISE_I_WILL_ONLY_CALL_THESE_PROPTYPES_CHECKERS_IN_DEV_MODE);
+      if (result instanceof Error) {
+        console.error(result.message || result);
+      }
+    };
 
 
 const propsEq = (a, b) => {
@@ -43,36 +51,42 @@ const propsEq = (a, b) => {
 
 
 export const Cmd = options => {
-  assertType('options', PropTypes.shape({
-    run: PropTypes.func.isRequired,
-    abort: PropTypes.func.isRequired,
-  }), options, 'Cmd', 'setup');
+  if (process.env.NODE_ENV !== 'production') {
+    assertType('options', PropTypes.shape({
+      run: PropTypes.func.isRequired,
+      abort: PropTypes.func.isRequired,
+    }), options, 'Cmd', 'setup');
+  }
   return options;
 };
 
 
 export const Sub = (ns, options) => {
   // assertType('ns', symbolType, ns, 'Sub', 'setup');
-  assertType('options', PropTypes.shape({
-    key: PropTypes.string.isRequired,
-    start: PropTypes.func.isRequired,
-    stop: PropTypes.func.isRequired,
-  }), options, 'Sub', 'setup');
+  if (process.env.NODE_ENV !== 'production') {
+    assertType('options', PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      start: PropTypes.func.isRequired,
+      stop: PropTypes.func.isRequired,
+    }), options, 'Sub', 'setup');
+  }
   return { ns, ...options };
 };
 
 
-export const TypedUnion = options => {
-  const U = Union(options);
-  Object.keys(options).forEach(o => {
-    const C = U[o];
-    U[o] = x => {
-      assertType('payload', options[o], x, `TypedUnion{${Object.keys(options).join(',')}}`, o);
-      return C(x);
+export const TypedUnion = process.env.NODE_ENV === 'production'
+  ? Union
+  : options => {
+      const U = Union(options);
+      Object.keys(options).forEach(o => {
+        const C = U[o];
+        U[o] = x => {
+          assertType('payload', options[o], x, `TypedUnion{${Object.keys(options).join(',')}}`, o);
+          return C(x);
+        };
+      });
+      return U;
     };
-  });
-  return U;
-};
 
 
 const createSpindle = () => {
@@ -219,7 +233,9 @@ export default function Spindle(name, {
       const { model, cmds, cb } = update;
 
       if (typeof model !== 'undefined') {
-        assertType('model', modelType, model, name, source);
+        if (process.env.NODE_ENV !== 'production') {
+          assertType('model', modelType, model, name, source);
+        }
         this._model = model;
       }
 
@@ -235,7 +251,8 @@ export default function Spindle(name, {
           .filter(prop =>
             this.props[prop])
           .forEach(prop => {
-            if (cbTypes.hasOwnProperty(prop)) {
+            if (process.env.NODE_ENV !== 'production' &&
+                prop in cbTypes) {
               assertType(`cb: { ${prop} }`, cbTypes[prop], cb[prop], name, source);
             }
             this.props[prop](cb[prop]);
