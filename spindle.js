@@ -280,6 +280,17 @@ export default function Spindle(name, {
       spindle: PropTypes.object,
     },
     propTypes: componentPropTypes,
+    spindle: {
+      Action,
+      init,
+      propsUpdate,
+      update,
+      view,
+      subscriptions,
+      modelType,
+      cbTypes,
+      propTypes: componentPropTypes,
+    }
   });
   return Component;
 };
